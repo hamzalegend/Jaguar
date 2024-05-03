@@ -15,7 +15,7 @@
 #include "Panels/ViewportPanel.h"
 #include "Panels/PropertiesPanel.h"
 
-class EditorLayer: public Layer
+class EditorLayer : public Layer
 {
 public:
 	EditorLayer();
@@ -38,6 +38,7 @@ private:
 
 	// Essential
 	Ref<Scene> m_scene = nullptr;
+	Ref<Scene> m_EditorScene = nullptr;
 	Ref<AssetManager> m_assetManager = MakeRef<AssetManager>();
 	Ref<SceneSerializer> serializer = nullptr;
 
@@ -60,5 +61,3 @@ private:
 
 	friend class ViewportPanel;
 };
-
-

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/DEFINES.h"
+#include "Core/UUID.h"
 
 #include "Layer/Layer.h"
 
@@ -24,3 +25,4 @@
 
 #include "Serialization/SceneSerializer.h"
 #include "Serialization/AssetManagerSerializer.h"
+

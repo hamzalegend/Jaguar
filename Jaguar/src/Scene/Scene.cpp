@@ -17,6 +17,9 @@
 
 #include "Components.h"
 
+#include "ScriptableEntity.h"
+
+
 static b2BodyType RBtypeTob2DRBtype(RigidBody2DComponent::BodyType type)
 {
 	switch (type)
@@ -43,6 +46,7 @@ Scene::~Scene()
 
 Ref<Scene> Scene::copy(Ref<Scene> other)
 {
+	return nullptr;
 	Ref<Scene> newScene = MakeRef<Scene>();
 	auto& src = other->m_Registry;
 	for (auto e : other->m_Registry.view<TagComponent>())
@@ -50,8 +54,56 @@ Ref<Scene> Scene::copy(Ref<Scene> other)
 		newScene->CreateEntity(other->m_Registry.get<TagComponent>(e).name);
 		Entity entity = { e, other.get() };
 
-		if (src.any_of<TagComponent>(e))
-			entity.AddComponent<TagComponent>().name = src.get<TagComponent>(e).name;
+		// if (src.any_of<TagComponent>(e))
+		// 	entity.AddComponent<TagComponent>().name = src.get<TagComponent>(e).name;
+
+
+		if (src.any_of<TransformComponent>(e))
+			entity.AddComponent<TransformComponent>().Position = src.get<TransformComponent>(e).Position;
+		entity.GetComponent<TransformComponent>().Rotation = src.get<TransformComponent>(e).Rotation;
+		entity.GetComponent<TransformComponent>().Scale = src.get<TransformComponent>(e).Scale;
+
+		if (src.any_of<SpriteRendererComponent>(e))
+			entity.AddComponent<SpriteRendererComponent>().sprite = src.get<SpriteRendererComponent>(e).sprite;
+
+		// if (src.any_of<MeshRendererComponent>(e))
+		// 	entity.AddComponent<MeshRendererComponent>().ib = src.get<MeshRendererComponent>(e).ib;
+		// 	entity.GetComponent<MeshRendererComponent>().mesh= src.get<MeshRendererComponent>(e).mesh;
+		// 	entity.GetComponent<MeshRendererComponent>().va = src.get<MeshRendererComponent>(e).va;
+		// 	entity.GetComponent<MeshRendererComponent>().vb = src.get<MeshRendererComponent>(e).vb;
+
+		if (src.any_of<CameraComponent>(e))
+			entity.AddComponent<CameraComponent>().camera = src.get<CameraComponent>(e).camera;
+		entity.GetComponent<CameraComponent>().Primary = src.get<CameraComponent>(e).Primary;
+
+
+		if (src.any_of<RigidBody2DComponent>(e))
+			entity.AddComponent<RigidBody2DComponent>().Type = src.get<RigidBody2DComponent>(e).Type;
+		entity.GetComponent<RigidBody2DComponent>().RunTimeBody = src.get<RigidBody2DComponent>(e).RunTimeBody;
+		entity.GetComponent<RigidBody2DComponent>().FixedRotation = src.get<RigidBody2DComponent>(e).FixedRotation;
+
+		if (src.any_of<BoxCollider2DComponent>(e))
+			entity.AddComponent<BoxCollider2DComponent>().Density = src.get<BoxCollider2DComponent>(e).Density;
+		entity.GetComponent<BoxCollider2DComponent>().Friction = src.get<BoxCollider2DComponent>(e).Friction;
+		entity.GetComponent<BoxCollider2DComponent>().offset = src.get<BoxCollider2DComponent>(e).offset;
+		entity.GetComponent<BoxCollider2DComponent>().Restitution = src.get<BoxCollider2DComponent>(e).Restitution;
+		entity.GetComponent<BoxCollider2DComponent>().RestitutionThreshhold = src.get<BoxCollider2DComponent>(e).RestitutionThreshhold;
+		entity.GetComponent<BoxCollider2DComponent>().RunTimeFixture = src.get<BoxCollider2DComponent>(e).RunTimeFixture;
+		entity.GetComponent<BoxCollider2DComponent>().size = src.get<BoxCollider2DComponent>(e).size;
+
+		if (src.any_of<lightComponent>(e))
+			entity.AddComponent<lightComponent>().Type = src.get<lightComponent>(e).Type;
+		entity.GetComponent<lightComponent>().Color = src.get<lightComponent>(e).Color;
+		entity.GetComponent<lightComponent>().constant = src.get<lightComponent>(e).constant;
+		entity.GetComponent<lightComponent>().CutOff = src.get<lightComponent>(e).CutOff;
+		entity.GetComponent<lightComponent>().Intensity = src.get<lightComponent>(e).Intensity;
+		entity.GetComponent<lightComponent>().linear = src.get<lightComponent>(e).linear;
+		entity.GetComponent<lightComponent>().OuterCutOff = src.get<lightComponent>(e).OuterCutOff;
+		entity.GetComponent<lightComponent>().quadratic = src.get<lightComponent>(e).quadratic;
+
+		if (src.any_of<ScriptComponent>(e))
+			entity.AddComponent<ScriptComponent>().ClassName = src.get<ScriptComponent>(e).ClassName;
+
 	}
 
 
@@ -62,9 +114,25 @@ Entity Scene::CreateEntity(const std::string& name)
 {
 	Entity e = { m_Registry.create(), this };
 	e.AddComponent<TagComponent>(name);
+	e.AddComponent<UUIDComponent>();
 	e.AddComponent<TransformComponent>();
 	return e;
 }
+
+Entity Scene::CreateEntityWithUUID(uint64_t uuid, const std::string& name)
+{
+	Entity e = { m_Registry.create(), this };
+	e.AddComponent<TagComponent>(name);
+	e.AddComponent<UUIDComponent>().uuid = Jaguar::UUID(uuid);
+	e.AddComponent<TransformComponent>();
+	return e;
+// 	return Entity();
+}
+
+// Entity Scene::CreateEntityWithUUID(const std::string& name, UUID uuid)
+// {
+// 	return Entity();
+// }
 
 void Scene::DestroyEntity(Entity e)
 {

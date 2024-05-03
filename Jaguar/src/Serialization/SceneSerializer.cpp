@@ -105,7 +105,8 @@ namespace YAML
 void SerializeEntity(YAML::Emitter& out, Entity e)
 {
 	out << YAML::BeginMap;
-	out << YAML::Key << "Entity" << YAML::Value << "065412306846"; // GUID goes into value
+	out << YAML::Key << "Entity" << YAML::Value << (uint64_t)e.GetComponent<UUIDComponent>().uuid; // GUID goes into value
+	// out << YAML::Key << "Entity" << YAML::Value << "(uint64_t)e.GetComponent<> GetUUID()"; // GUID goes into value
 
 	if (e.HasComponent<TagComponent>())
 	{
@@ -217,6 +218,18 @@ void SerializeEntity(YAML::Emitter& out, Entity e)
 		out << YAML::EndMap; // light
 	}
 
+
+	if (e.HasComponent<ScriptComponent>())
+	{
+		auto& component = e.GetComponent<ScriptComponent>();
+		out << YAML::Key << "ScriptComponent";
+		out << YAML::BeginMap; // Script
+
+		out << YAML::Key << "ClassName" << YAML::Value << component.ClassName;
+
+		out << YAML::EndMap; // Script
+	}
+
 	out << YAML::EndMap; //Entity
 }
 
@@ -251,6 +264,8 @@ void SceneSerializer::Serialize(const std::string& path)
 
 	std::ofstream fout(path);
 	fout << out.c_str();
+
+	std::cout << "serializing: " << path << "\n";
 }
 
 void SceneSerializer::DeSerialize(const std::string& path)
@@ -280,14 +295,14 @@ void SceneSerializer::DeSerialize(const std::string& path)
 		for (auto entity : entities)
 		{
 			// ID
-			// uint32_t uuid = entity["Entity"].as<uint32_t>();
+			uint32_t uuid = entity["Entity"].as<uint64_t>();
 
 			// Tag
 			std::string name;
 			auto TagComponent = entity["TagComponent"];
 			if (TagComponent)
 				name = TagComponent["Tag"].as<std::string>();
-			auto e = m_scene->CreateEntity(name);
+			auto e = m_scene->CreateEntityWithUUID(uuid, name);
 
 			// Transform
 			auto transform = entity["TransformComponent"];
@@ -365,6 +380,14 @@ void SceneSerializer::DeSerialize(const std::string& path)
 				LC.Color = Light["Color"].as<glm::vec4>();
 				LC.Intensity = Light["Intensity"].as<float>();
 				LC.Type = (lightComponent::LightType)Light["Type"].as<int>();
+			}
+
+			// Script
+			auto Script = entity["ScriptComponent"];
+			if (Script)
+			{
+				ScriptComponent& SC = e.AddComponent<ScriptComponent>();
+				SC.ClassName = Script["ClassName"].as<std::string>();
 			}
 
 		}

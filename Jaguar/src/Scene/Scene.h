@@ -5,6 +5,7 @@
 #include "API/Shader.h"
 #include "API/Texture.h"
 #include "API/Texture.h"
+#include "Core/UUID.h"
 
 
 class b2World;
@@ -19,8 +20,9 @@ public:
 	~Scene();
 
 	static Ref<Scene> copy(Ref<Scene> other);
-	
+
 	Entity CreateEntity(const std::string& name = "New Entity");
+	Entity CreateEntityWithUUID(uint64_t uuid, const std::string& name = "New Entity");
 	void DestroyEntity(Entity e);
 
 	void OnUpdate(float deltaTime, bool RunPhysics = false);
@@ -45,3 +47,4 @@ private:
 	friend class Renderer;
 	friend class EditorLayer;
 };
+

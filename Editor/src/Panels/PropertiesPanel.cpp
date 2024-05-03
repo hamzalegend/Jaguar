@@ -5,6 +5,9 @@
 #include <imguiLayer/ImguiLayer.h>
 
 #include "Renderer/Material.h"
+#include <unordered_map>
+
+#include "Scripting/ScriptEngine.h"
 
 PropertiesPanel::PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView)
 	:m_sceneHierarchyPanel(SHP), m_viewport(viewport), m_gameView(gameView)
@@ -263,8 +266,24 @@ void PropertiesPanel::DrawComponents(Entity e)
 			ImGui::DragFloat("CutOff", &LC.CutOff, 1);
 			ImGui::DragFloat("OuterCutOff", &LC.OuterCutOff, 1);
 		}
+		});
 
-		
+	DrawComponent<ScriptComponent>("Script Component", e, [](Entity e) {
+		auto& SC = e.GetComponent<ScriptComponent>();
+
+		bool scriptClassExists = ScriptEngine::EntityClassExists(SC.ClassName);
+
+		static char buffer[64];
+		strcpy(buffer, SC.ClassName.c_str());
+
+		if (!scriptClassExists)
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+
+		if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+			SC.ClassName = buffer;
+
+		if (!scriptClassExists)
+			ImGui::PopStyleColor();
 
 		});
 
@@ -276,7 +295,7 @@ void PropertiesPanel::DrawComponents(Entity e)
 void PropertiesPanel::AddComponentButton()
 {
 	static int selectedComponent = -1;
-	const char* names[] = { "Tag Component", "Transform Component", "Sprite Renderer Component", "Mesh Renderer Component", "Camera Component", "Rigid Body2D Component", "BoxCollider2D Component", "LightComponent", };
+	const char* names[] = { "Tag Component", "Transform Component", "Sprite Renderer Component", "Mesh Renderer Component", "Camera Component", "Rigid Body2D Component", "BoxCollider2D Component", "LightComponent", "Script Component"};
 
 	if (ImGui::Button("Add Component"))
 		ImGui::OpenPopup("AddComponentPopup");
@@ -298,6 +317,7 @@ void PropertiesPanel::AddComponentButton()
 				case 5: m_sceneHierarchyPanel->GetSeletedEntity().AddComponent<RigidBody2DComponent>(); break;
 				case 6: m_sceneHierarchyPanel->GetSeletedEntity().AddComponent<BoxCollider2DComponent>(); break;
 				case 7: m_sceneHierarchyPanel->GetSeletedEntity().AddComponent<lightComponent>(); break;
+				case 8: m_sceneHierarchyPanel->GetSeletedEntity().AddComponent<ScriptComponent>(); break;
 				}
 				selectedComponent = -1;
 				ImGui::CloseCurrentPopup();

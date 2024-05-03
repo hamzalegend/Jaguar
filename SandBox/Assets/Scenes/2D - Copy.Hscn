@@ -1,6 +1,6 @@
 Scene: Untitled Scene
 Entites:
-  - Entity: 4244239339
+  - Entity: 065412306846
     TagComponent:
       Tag: sp2
     TransformComponent:
@@ -20,7 +20,7 @@ Entites:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshhold: 0.5
-  - Entity: 996670996
+  - Entity: 065412306846
     TagComponent:
       Tag: grounds
     TransformComponent:
@@ -40,7 +40,7 @@ Entites:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshhold: 0.5
-  - Entity: 2270260776
+  - Entity: 065412306846
     TagComponent:
       Tag: camera
     TransformComponent:
@@ -52,11 +52,11 @@ Entites:
       FOV: 90
       NearPlane: 0.00999999978
       FarPlane: 1000
-  - Entity: 1091407903
+  - Entity: 065412306846
     TagComponent:
       Tag: mario
     TransformComponent:
-      Position: [-3.20642161, 0.321297228, -1]
+      Position: [-2.70789337, 1.79615247, -1.99999988]
       Rotation: [0, 0, -0.404748619]
       Scale: [0.599523187, 0.49999851, 0.5]
     SpriteRendererComponent:
@@ -72,5 +72,3 @@ Entites:
       Friction: 0.5
       Restitution: 0.600000024
       RestitutionThreshhold: 0.5
-    ScriptComponent:
-      ClassName: Sandbox.Player

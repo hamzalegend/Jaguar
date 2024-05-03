@@ -1,6 +1,6 @@
 Scene: Untitled Scene
 Entites:
-  - Entity: 065412306846
+  - Entity: 2305908908
     TagComponent:
       Tag: trees
     TransformComponent:
@@ -10,7 +10,7 @@ Entites:
     MeshRendererComponent:
       meshPath: Assets\Models\trees\trees.gltf
       MaterialPath: Assets/Materials\trees.mat
-  - Entity: 065412306846
+  - Entity: 3146131855
     TagComponent:
       Tag: Spot Light
     TransformComponent:
@@ -21,7 +21,7 @@ Entites:
       Color: [0, 0.0882353783, 1, 1]
       Intensity: 10
       Type: 2
-  - Entity: 065412306846
+  - Entity: 1601030824
     TagComponent:
       Tag: Red Light
     TransformComponent:
@@ -32,7 +32,7 @@ Entites:
       Color: [1, 0, 0, 1]
       Intensity: 1.79999995
       Type: 1
-  - Entity: 065412306846
+  - Entity: 1959130367
     TagComponent:
       Tag: directionalLight
     TransformComponent:
@@ -43,7 +43,7 @@ Entites:
       Color: [1, 1, 1, 1]
       Intensity: 0.25
       Type: 0
-  - Entity: 065412306846
+  - Entity: 1755364953
     TagComponent:
       Tag: bunny
     TransformComponent:
@@ -53,7 +53,7 @@ Entites:
     MeshRendererComponent:
       meshPath: Assets\Models\Bunny.obj
       MaterialPath: Assets\Materials\bunny.mat
-  - Entity: 065412306846
+  - Entity: 829748307
     TagComponent:
       Tag: fox
     TransformComponent:
@@ -63,7 +63,7 @@ Entites:
     MeshRendererComponent:
       meshPath: Assets\Models\fox.obj
       MaterialPath: Assets/Materials\Default.mat
-  - Entity: 065412306846
+  - Entity: 1004453988
     TagComponent:
       Tag: floor
     TransformComponent:
@@ -73,7 +73,7 @@ Entites:
     MeshRendererComponent:
       meshPath: Assets\Models\cube.obj
       MaterialPath: Assets/Materials\Default.mat
-  - Entity: 065412306846
+  - Entity: 3168419484
     TagComponent:
       Tag: backpack
     TransformComponent:
@@ -83,7 +83,7 @@ Entites:
     MeshRendererComponent:
       meshPath: Assets\Models\backpack.fbx
       MaterialPath: Assets\Materials\backpack.mat
-  - Entity: 065412306846
+  - Entity: 2310151526
     TagComponent:
       Tag: camera
     TransformComponent:
@@ -95,7 +95,7 @@ Entites:
       FOV: 45
       NearPlane: 0.100000001
       FarPlane: 100
-  - Entity: 065412306846
+  - Entity: 1439051389
     TagComponent:
       Tag: pink Light
     TransformComponent:

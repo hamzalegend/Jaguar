@@ -1,16 +1,31 @@
 #pragma once
 
+#include "Renderer/Mesh.h"
+
+// #include "ScriptableEntity.h"
+
+#include "Camera/Camera.h"
+#include <Core/UUID.h>
+
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
 #include <string>
-#include "Renderer/Mesh.h"
 
-#include "ScriptableEntity.h"
+class ScriptableEntity;
 
-#include "Camera/Camera.h"
+// struct UUIDComponent
+// {
+// 	// Jaguar::UUID GetUUID() { return m_UUID; }
+// 	uint32_t UUID;
+// private:
+// 
+// 	UUIDComponent() = default;
+// 	UUIDComponent(const UUIDComponent&) = default;
+// };
 
 struct TransformComponent
 {
@@ -18,24 +33,40 @@ struct TransformComponent
 	glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 
-	TransformComponent() = default;
-	TransformComponent(const TransformComponent&) = default;
-	TransformComponent(const glm::vec3& translation)
-		: Position(translation) {}
-
 	glm::mat4 GetTransform() const
 	{
 		glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
-		
+
 		return glm::translate(glm::mat4(1.0f), Position)
 			* rotation
 			* glm::scale(glm::mat4(1.0f), Scale);
 	}
+
+
+	TransformComponent() = default;
+	TransformComponent(const TransformComponent&) = default;
+	TransformComponent(const glm::vec3& translation)
+		: Position(translation) {}
 };
 struct TagComponent
 {
 	std::string name;
 	operator std::string& () { return name; }
+
+
+	TagComponent() = default;
+	TagComponent(const TagComponent&) = default;
+};
+
+
+struct UUIDComponent
+{
+	std::string name;
+	operator std::string& () { return name; }
+
+	Jaguar::UUID uuid;
+	UUIDComponent() = default;
+	UUIDComponent(const UUIDComponent&) = default;
 };
 
 struct MeshRendererComponent
@@ -61,17 +92,33 @@ struct MeshRendererComponent
 	Ref<IndexBuffer> ib;
 
 
+	MeshRendererComponent() = default;
+	MeshRendererComponent(const MeshRendererComponent&) = default;
 };
 
 struct SpriteRendererComponent
 {
 	Sprite sprite;
+
+	SpriteRendererComponent() = default;
+	SpriteRendererComponent(const SpriteRendererComponent&) = default;
 };
 
 struct CameraComponent
 {
 	Camera camera;
 	bool Primary = true;
+
+	CameraComponent() = default;
+	CameraComponent(const CameraComponent&) = default;
+};
+
+struct ScriptComponent
+{
+	std::string ClassName;
+
+	ScriptComponent() = default;
+	ScriptComponent(const ScriptComponent&) = default;
 };
 
 struct NativeScriptComponent
@@ -87,6 +134,9 @@ struct NativeScriptComponent
 		InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
 		DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
 	}
+
+	NativeScriptComponent() = default;
+	NativeScriptComponent(const NativeScriptComponent&) = default;
 };
 
 struct RigidBody2DComponent
@@ -107,6 +157,8 @@ struct RigidBody2DComponent
 
 	void* RunTimeBody = nullptr;
 
+	RigidBody2DComponent() = default;
+	RigidBody2DComponent(const RigidBody2DComponent&) = default;
 };
 
 struct BoxCollider2DComponent
@@ -114,8 +166,8 @@ struct BoxCollider2DComponent
 	// BoxCollider2DComponent() = default;
 	// BoxCollider2DComponent(BoxCollider2DComponent&) = default;
 
-	glm::vec2 offset = {0.0f, 0.0f};
-	glm::vec2 size = {0.5f, 0.5f};
+	glm::vec2 offset = { 0.0f, 0.0f };
+	glm::vec2 size = { 0.5f, 0.5f };
 
 	// TODO:: to Physics mats:
 	float Density = 1;
@@ -126,6 +178,8 @@ struct BoxCollider2DComponent
 
 	void* RunTimeFixture = nullptr;
 
+	BoxCollider2DComponent() = default;
+	BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 };
 
 struct lightComponent
@@ -139,14 +193,17 @@ struct lightComponent
 
 	LightType Type = LightType::Directional;
 	glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	float Intensity = 1;	
+	float Intensity = 1;
 
 	// point && spot
 	float constant = 1.0f;
 	float linear = 0.009f;
 	float quadratic = 1.032f;
-	
+
 	// spot
 	float CutOff = 12;
 	float OuterCutOff = 20;
+
+	lightComponent() = default;
+	lightComponent(const lightComponent&) = default;
 };

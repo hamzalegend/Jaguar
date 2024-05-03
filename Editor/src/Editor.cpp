@@ -16,6 +16,9 @@
 
 #include "Renderer/Renderer.h"
 
+#include <windows.h>
+#include <string>
+#include <iostream>
 
 EditorLayer::EditorLayer()
 {
@@ -28,45 +31,57 @@ EditorLayer::~EditorLayer()
 void EditorLayer::OnScenePlay()
 {
 	m_scene->OnPhysicsStart();
+	m_EditorScene = Scene::copy(m_scene);
 }
 
 void EditorLayer::OnSceneStop()
 {
 	m_scene->OnPhysicsStop();
+	m_scene = nullptr;
+	m_scene = Scene::copy(m_EditorScene);
+
+
 }
 
+
+void EditorLayer::SaveScene(std::filesystem::path path)
+{
+	serializer->Serialize(std::filesystem::current_path().string() + std::string("/Assets/") + path.string());
+}
+
+
 void EditorLayer::OnAttach()
-{    
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+{
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-    Input::SetShowCursor(true);
+	Input::SetShowCursor(true);
 
-    m_scene = MakeRef<Scene>();
-    serializer = MakeRef<SceneSerializer>(m_scene, m_assetManager);
+	m_scene = MakeRef<Scene>();
+	serializer = MakeRef<SceneSerializer>(m_scene, m_assetManager);
 	m_scene->CreateEntity("Camera").AddComponent<CameraComponent>();
 
-    {
-        FrameBufferSpecification FBspecGameView = { 1280, 720 };
-        FBspecGameView.Atachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
-        m_GameViewFrameBuffer = MakeRef<FrameBuffer>(FBspecGameView);
+	{
+		FrameBufferSpecification FBspecGameView = { 1280, 720 };
+		FBspecGameView.Atachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
+		m_GameViewFrameBuffer = MakeRef<FrameBuffer>(FBspecGameView);
 
-        FrameBufferSpecification FBspec = { 1280, 720 };
-        FBspec.Atachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
-        m_ViewPortFrameBuffer = MakeRef<FrameBuffer>(FBspec);
-    }
+		FrameBufferSpecification FBspec = { 1280, 720 };
+		FBspec.Atachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
+		m_ViewPortFrameBuffer = MakeRef<FrameBuffer>(FBspec);
+	}
 
-    m_EditorCameraController = MakeRef<EditorCameraController>();
-    m_ContentBrowserPanel = MakeRef<ContentBrowserPanel>("Assets");
-    m_SceneHierarchyPanel = MakeRef<SceneHierarchyPanel>(m_scene);
-    m_ViewportPanel= MakeRef<ViewportPanel>(this);
-    m_GameViewPanel = MakeRef<GameView>(m_GameViewFrameBuffer, m_scene);
-    m_PropertiesPanel = MakeRef<PropertiesPanel>(m_SceneHierarchyPanel, m_ViewportPanel, m_GameViewPanel);
+	m_EditorCameraController = MakeRef<EditorCameraController>();
+	m_ContentBrowserPanel = MakeRef<ContentBrowserPanel>("Assets");
+	m_SceneHierarchyPanel = MakeRef<SceneHierarchyPanel>(m_scene);
+	m_ViewportPanel = MakeRef<ViewportPanel>(this);
+	m_GameViewPanel = MakeRef<GameView>(m_GameViewFrameBuffer, m_scene);
+	m_PropertiesPanel = MakeRef<PropertiesPanel>(m_SceneHierarchyPanel, m_ViewportPanel, m_GameViewPanel);
 
-    ImguiLayer::init(Application::Get().GetWindow()->GetNative());
+	ImguiLayer::init(Application::Get().GetWindow()->GetNative());
 };
 bool lstfrmsim;
 void EditorLayer::OnUpdate(float deltaTime)
-{    
+{
 	if (lastframecammove != m_ViewportPanel->MoveCam)
 	{
 		glfwGetCursorPos(Application::Get().GetWindow()->GetNative(), &XposFirst, &YposFirst);
@@ -91,8 +106,10 @@ void EditorLayer::OnUpdate(float deltaTime)
 	}
 	else
 	{
-		// if (Input::GetKey(GLFW_KEY_F1))
-		// 	SaveScene("Scenes/3D.Hscn");
+		if (Input::GetKey(GLFW_KEY_F1))
+		{
+			SaveScene("Scenes/2D.Hscn");
+		}
 	}
 
 	if (lstfrmsim != m_inPlayMode)
@@ -127,7 +144,7 @@ void EditorLayer::OnUpdate(float deltaTime)
 			}
 		}
 	}
-	
+
 	OnUIUpdate();
 
 }
@@ -135,28 +152,28 @@ Ref<Material> mat;
 std::string path;
 void EditorLayer::OnUIUpdate()
 {
-    ImguiLayer::Begin();
+	ImguiLayer::Begin();
 	showDefaultUI();
 
-    m_ContentBrowserPanel->Draw();
-    m_SceneHierarchyPanel->Draw();
-    m_PropertiesPanel->Draw();
+	m_ContentBrowserPanel->Draw();
+	m_SceneHierarchyPanel->Draw();
+	m_PropertiesPanel->Draw();
 
-    m_ViewPortFrameBuffer->Bind();
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    m_ViewPortFrameBuffer->ClearAttachment(1, -1);
-    Renderer::RednerScene(m_scene.get(), m_EditorCameraController.get(), m_EditorCameraController->GetViewMatrix());
-    m_ViewPortFrameBuffer->UnBind();
-    m_ViewportPanel->Draw();
+	m_ViewPortFrameBuffer->Bind();
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_ViewPortFrameBuffer->ClearAttachment(1, -1);
+	Renderer::RednerScene(m_scene.get(), m_EditorCameraController.get(), m_EditorCameraController->GetViewMatrix());
+	m_ViewPortFrameBuffer->UnBind();
+	m_ViewportPanel->Draw();
 
-    m_GameViewPanel->Draw();
+	m_GameViewPanel->Draw();
 
-    {
-        ImGui::Begin("Hello");
-        ImGui::Text("Hello Editor");
-        ImGui::End();
-    }
+	{
+		ImGui::Begin("Hello");
+		ImGui::Text("Hello Editor");
+		ImGui::End();
+	}
 
 	{
 		ImGui::Begin("Material View");
@@ -285,12 +302,12 @@ void EditorLayer::OnUIUpdate()
 
 
 
-    ImguiLayer::End();
+	ImguiLayer::End();
 }
 
 void EditorLayer::OnDetach()
 {
-    ImguiLayer::Destroy();
+	ImguiLayer::Destroy();
 }
 
 
