@@ -21,6 +21,8 @@ static double YposFirst = 0;
 
 static bool lastframecammove;
 
+static bool m_Enabled;
+
 class Input
 {
 public:
@@ -28,9 +30,14 @@ public:
 	{
 		// glfwSetCursorPosCallback(Application::Get().GetWindow()->GetNative(), mouse_callback);
 		Offset = new glm::vec2();
+		Enable();
 	}
 
-	static bool GetKey(int key) { return glfwGetKey((GLFWwindow*)Application::Get().GetWindow()->GetNative(), key); };
+	static bool GetKey(int key)
+	{ 
+		// if (!m_Enabled) return false;
+		return glfwGetKey((GLFWwindow*)Application::Get().GetWindow()->GetNative(), key);
+	};
 
 	static void SetShowCursor(bool Show)
 	{
@@ -97,7 +104,10 @@ public:
 		return { Xoffset2, Yoffset2 };
 	}
 
-private:
 
+	inline static void Enable() { m_Enabled = true; }
+	inline static void Disable() { m_Enabled = false; }
+
+private:
 
 };

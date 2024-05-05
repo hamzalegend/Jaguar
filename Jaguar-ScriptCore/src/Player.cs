@@ -14,12 +14,31 @@ namespace Sandbox
         void OnCreate()
         {
             Console.WriteLine("OnCreate();");
+            Console.WriteLine(m_uuid);
         }
 
         void OnUpdate(float deltatime)
         {
-            Console.WriteLine("OnUpdate();");
-            Console.WriteLine(deltatime);
+            float speed = 5;
+            Vector3 velocity = Vector3.Zero;
+
+            if (Input.GetKeyDown(KeyCode.W))
+                velocity.Y += 1;    
+            
+            if (Input.GetKeyDown(KeyCode.S))
+                velocity.Y -= 1;    
+            
+            if (Input.GetKeyDown(KeyCode.D))
+                velocity.X += 1;    
+            
+            if (Input.GetKeyDown(KeyCode.A))
+                velocity.X -= 1;    
+
+
+            Vector3 translation = Translation;
+            translation += velocity * speed * deltatime;
+            Translation = translation;
+
         }
 
 

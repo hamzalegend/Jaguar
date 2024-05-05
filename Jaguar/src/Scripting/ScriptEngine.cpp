@@ -11,8 +11,10 @@
 
 #include "ScriptGlue.h"
 #include <Core/DEFINES.h>
+#include <Core/UUID.h>
 
 #include <unordered_map>
+#include <Engine.h>
 
 namespace Utils
 {
@@ -100,6 +102,9 @@ struct ScriptEngineData
     ScriptClass EntityClass;
 
     std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
+    std::unordered_map<Jaguar::UUID, Ref<ScriptInstance>> EntityInstances;
+
+    Scene* SceneContext;
 };
 
 static ScriptEngineData *s_Data;
@@ -120,9 +125,9 @@ void ScriptEngine::Init()
    //  MonoMethod* OnCreateFunc = s_Data->EntityClass.GetMethod("OnCreate", 0);
    //  s_Data->EntityClass.InvokeMethod(instance, OnCreateFunc, nullptr);
 
+    s_Data->EntityClass = ScriptClass("Jaguar", "Entity");
     if (0) {
             // retrieve and instantiate claass with constructor
-            s_Data->EntityClass = ScriptClass("Jaguar", "Entity");
         MonoObject* instance = s_Data->EntityClass.Instantiate();
 
         // call method
@@ -156,7 +161,7 @@ void ScriptEngine::LoadAssembly(const std::filesystem::path filepath)
     // move this
     s_Data->CoreAssembly = Utils::LoadMonoAssembly(filepath.string());
     s_Data->CoreAssemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
-    Utils::PrintAssemblyTypes(s_Data->CoreAssembly);    
+    // Utils::PrintAssemblyTypes(s_Data->CoreAssembly);    
 }
 
 void ScriptEngine::LoadAssemblyClasses(MonoAssembly *assembly)
@@ -192,6 +197,40 @@ void ScriptEngine::LoadAssemblyClasses(MonoAssembly *assembly)
 }
 
 
+void ScriptEngine::OnRuntimeStart(Scene* scene)
+{
+    s_Data->SceneContext = scene;
+}
+
+void ScriptEngine::OnRuntimeStop()
+{
+    s_Data->EntityClasses.clear();
+}
+
+
+void ScriptEngine::OnCreateEntity(Entity entity)
+{
+    auto sc = entity.GetComponent<ScriptComponent>();
+    if (ScriptEngine::EntityClassExists(sc.ClassName))
+    {
+        Ref<ScriptInstance> instance = MakeRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
+
+        s_Data->EntityInstances[entity.GetComponent<UUIDComponent>().uuid] = instance;
+
+        instance->InvokeOnCreateMethod();
+    }
+}
+
+void ScriptEngine::OnUpdateEntity(Entity entity, float deltatime)
+{
+    auto sc = entity.GetComponent<ScriptComponent>();
+    
+    // Ref<ScriptInstance> instance = MakeRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
+    Ref<ScriptInstance> instance = s_Data->EntityInstances[entity.GetComponent<UUIDComponent>().uuid];
+    s_Data->EntityInstances[entity.GetComponent<UUIDComponent>().uuid] = instance;
+    instance->InvokeOnUpdateMethod(deltatime);
+   
+}
 std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses()
 {
     return s_Data->EntityClasses;
@@ -249,16 +288,29 @@ MonoObject *ScriptClass::InvokeMethod(MonoObject *instance, MonoMethod *method, 
     return mono_runtime_invoke(method, instance, params, nullptr);
 }
 
+Scene* ScriptEngine::GetSceneContext()
+{
+    return s_Data->SceneContext;
+}
 
 //
 
 
-ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass)
+ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity)
     :m_ScriptCLass(scriptClass)
 {
+    std::cout << entity.GetComponent<TagComponent>().name << "\n";
     m_Instance = m_ScriptCLass->Instantiate();
+    Constructor = s_Data->EntityClass.GetMethod(".ctor", 1); // to get constructor
     OnCreateMethod = m_ScriptCLass->GetMethod("OnCreate", 0);
     OnUpdateMethod = m_ScriptCLass->GetMethod("OnUpdate", 1);
+
+    { // call constructor
+        Jaguar::UUID uuid = entity.GetComponent<UUIDComponent>().uuid;
+        void* p = &uuid;
+        m_ScriptCLass->InvokeMethod(m_Instance, Constructor, &p);
+    }
+
 }
 
 void ScriptInstance::InvokeOnCreateMethod() 

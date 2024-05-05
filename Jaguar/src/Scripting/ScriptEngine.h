@@ -4,8 +4,10 @@
 #include <string>
 
 #include <core/DEFINES.h>
+#include <core/UUID.h>
 
 #include <unordered_map>
+#include "Scene/Entity.h"
 
 extern "C" {
 	typedef struct _MonoClass MonoClass;
@@ -40,6 +42,11 @@ public:
 	static void ShutDown();
 	static void LoadAssembly(const std::filesystem::path filepath);
 	static void LoadAssemblyClasses(MonoAssembly* assembly);
+	static void OnRuntimeStart(Scene* scene);
+	static void OnRuntimeStop();
+	static void OnCreateEntity(Entity entity);
+	static void OnUpdateEntity(Entity entity, float deltatime);
+	static Scene* GetSceneContext();
 	static MonoObject* InstantiateClass(MonoClass* monoClass);
 	
 	static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
@@ -56,7 +63,7 @@ private:
 class ScriptInstance
 {
 public:
-	ScriptInstance(Ref<ScriptClass>);
+	ScriptInstance(Ref<ScriptClass>, Entity entity);
 
 
 	void InvokeOnCreateMethod();
@@ -66,6 +73,7 @@ private:
 	Ref<ScriptClass> m_ScriptCLass;
 
 	MonoObject* m_Instance = nullptr;
+	MonoMethod* Constructor = nullptr;
 	MonoMethod* OnCreateMethod = nullptr;
 	MonoMethod* OnUpdateMethod = nullptr;
 

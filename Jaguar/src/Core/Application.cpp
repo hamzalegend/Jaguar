@@ -35,7 +35,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void Application::Run()
 {
-	m_window = new Window("Hello OpenGL Engine");
+	m_window = new Window("Jaguar Engine");
 
 	Input::Init();
 	Renderer::Init();

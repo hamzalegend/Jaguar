@@ -48,6 +48,7 @@ struct TransformComponent
 	TransformComponent(const glm::vec3& translation)
 		: Position(translation) {}
 };
+
 struct TagComponent
 {
 	std::string name;
@@ -57,7 +58,6 @@ struct TagComponent
 	TagComponent() = default;
 	TagComponent(const TagComponent&) = default;
 };
-
 
 struct UUIDComponent
 {
@@ -207,3 +207,21 @@ struct lightComponent
 	lightComponent() = default;
 	lightComponent(const lightComponent&) = default;
 };
+
+
+template<typename... Component>
+struct ComponentGroup
+{
+};
+
+using AllComponents = ComponentGroup<
+	TransformComponent, 
+	MeshRendererComponent,
+	SpriteRendererComponent,
+	CameraComponent,
+	ScriptComponent,
+	NativeScriptComponent,
+	RigidBody2DComponent,
+	BoxCollider2DComponent,
+	lightComponent
+	>;

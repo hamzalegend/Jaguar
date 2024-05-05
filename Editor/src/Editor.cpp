@@ -30,17 +30,16 @@ EditorLayer::~EditorLayer()
 
 void EditorLayer::OnScenePlay()
 {
-	m_scene->OnPhysicsStart();
+	m_scene->OnRuntimeStart();
 	m_EditorScene = Scene::copy(m_scene);
 }
 
 void EditorLayer::OnSceneStop()
 {
-	m_scene->OnPhysicsStop();
-	m_scene = nullptr;
+	m_SceneHierarchyPanel->ClearSeletedEntity();
+	m_scene->OnRuntimeStop();
+
 	m_scene = Scene::copy(m_EditorScene);
-
-
 }
 
 
@@ -82,6 +81,7 @@ void EditorLayer::OnAttach()
 bool lstfrmsim;
 void EditorLayer::OnUpdate(float deltaTime)
 {
+
 	if (lastframecammove != m_ViewportPanel->MoveCam)
 	{
 		glfwGetCursorPos(Application::Get().GetWindow()->GetNative(), &XposFirst, &YposFirst);

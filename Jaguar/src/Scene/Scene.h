@@ -25,18 +25,25 @@ public:
 	Entity CreateEntityWithUUID(uint64_t uuid, const std::string& name = "New Entity");
 	void DestroyEntity(Entity e);
 
+	Entity GetEntityByUUID(Jaguar::UUID uuid);
+
 	void OnUpdate(float deltaTime, bool RunPhysics = false);
 	void clear();
-
-	void OnPhysicsStart();
-	void OnPhysicsStop();
+	void OnRuntimeStart();
+	void OnUpdateRuntime(float deltaTime);
+	void OnRuntimeStop();
 
 	Ref<Shader> shader;
 	// Ref<Texture> texture1;
 
 
 private:
+
+	void OnPhysicsStart();
+	void OnPhysicsStop();
+
 	entt::registry m_Registry;
+	std::unordered_map<Jaguar::UUID, entt::entity> enttMap;
 
 	b2World* m_physicsWorld;
 
