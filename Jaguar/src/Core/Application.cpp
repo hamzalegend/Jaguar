@@ -25,10 +25,6 @@ Application::~Application()
 float deltaTime = 0;
 float lastFrame = 0;
 
-bool firstMouse = true;
-float lastX;
-float lastY;
-
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 }

@@ -283,7 +283,7 @@ void Scene::OnRuntimeStart()
 
 void Scene::OnUpdateRuntime(float deltaTime)
 {
-	ScriptEngine::OnRuntimeStop();
+	// ScriptEngine::OnRuntimeStop(); // should this be here? ... i truly dont know
 
 	auto view = m_Registry.view<ScriptComponent>();
 	for (auto e : view)

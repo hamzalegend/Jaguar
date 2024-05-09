@@ -17,16 +17,6 @@
 
 class ScriptableEntity;
 
-// struct UUIDComponent
-// {
-// 	// Jaguar::UUID GetUUID() { return m_UUID; }
-// 	uint32_t UUID;
-// private:
-// 
-// 	UUIDComponent() = default;
-// 	UUIDComponent(const UUIDComponent&) = default;
-// };
-
 struct TransformComponent
 {
 	glm::vec3 Position = { 0.0f, 0.0f, 0.0f };

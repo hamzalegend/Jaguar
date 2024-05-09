@@ -139,6 +139,10 @@ void PropertiesPanel::DrawComponents(Entity e)
 			SpriteRenderer.sprite.texture = MakeRef<Texture>(SpriteRenderer.sprite.texturePath.c_str());
 
 		}
+
+		ImGui::Text(SpriteRenderer.sprite.texturePath.c_str());
+		if (SpriteRenderer.sprite.texture)
+			ImGui::Image((ImTextureID)SpriteRenderer.sprite.texture->GetImage(), {56, 56});
 		});
 	DrawComponent<MeshRendererComponent>("Mesh Renderer Component", e, [](Entity e) {
 		auto& MeshRenderer = e.GetComponent<MeshRendererComponent>();
@@ -153,9 +157,7 @@ void PropertiesPanel::DrawComponents(Entity e)
 		if (p != "") // if you drag in a model
 		{
 			std::cout << p << "\n";
-			// m_scene = MakeRef<Scene>();
 			MeshRenderer.mesh.meshPath = (s_assetsPath /= p).string();
-			// MeshRenderer.mesh.texture = MakeRef<Mesh>(MeshRenderer.mesh.meshPath.c_str());
 
 			ModelManager mm;
 			mm.loadModel(MeshRenderer.mesh.meshPath);
@@ -165,7 +167,6 @@ void PropertiesPanel::DrawComponents(Entity e)
 			MeshRenderer.ReBuild();
 
 		}
-
 
 		Ref<Material>& material = MeshRenderer.mesh.Material;
 		if (material)

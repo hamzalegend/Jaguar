@@ -118,6 +118,7 @@ void ScriptEngine::Init()
 
     LoadAssemblyClasses(s_Data->CoreAssembly);
 
+    ScriptGLue::RegisterComponents();
     ScriptGLue::RegisterFunctions();
 
    //  MonoObject* instance = s_Data->EntityClass.Instantiate();
@@ -258,12 +259,18 @@ void ScriptEngine::ShutDownMono()
     s_Data->RootDomain = nullptr;
 }
 
-MonoObject *ScriptEngine::InstantiateClass(MonoClass *monoClass)
+MonoObject* ScriptEngine::InstantiateClass(MonoClass *monoClass)
 {
     MonoObject *instance = mono_object_new(s_Data->AppDomain, monoClass);
     mono_runtime_object_init(instance);
     return instance;
 }
+
+MonoImage* ScriptEngine::GetCoreAssemblyImage()
+{
+    return s_Data->CoreAssemblyImage;
+}
+
 
 //
 
@@ -286,6 +293,7 @@ MonoMethod *ScriptClass::GetMethod(const std::string &name, int paraCount)
 MonoObject *ScriptClass::InvokeMethod(MonoObject *instance, MonoMethod *method, void **params)
 {
     return mono_runtime_invoke(method, instance, params, nullptr);
+    // if crash here then check intenal calls
 }
 
 Scene* ScriptEngine::GetSceneContext()
@@ -315,12 +323,14 @@ ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity)
 
 void ScriptInstance::InvokeOnCreateMethod() 
 {
-    m_ScriptCLass->InvokeMethod(m_Instance, OnCreateMethod, nullptr);
+    if (OnCreateMethod)
+        m_ScriptCLass->InvokeMethod(m_Instance, OnCreateMethod, nullptr);
 }
 
 void ScriptInstance::InvokeOnUpdateMethod(float dt)
 {
     void* param = &dt;
-    m_ScriptCLass->InvokeMethod(m_Instance, OnUpdateMethod, &param);
+    if (OnUpdateMethod)
+        m_ScriptCLass->InvokeMethod(m_Instance, OnUpdateMethod, &param);
 
 }

@@ -40,7 +40,7 @@ private:
 	Ref<Scene> m_scene = nullptr;
 	Ref<Scene> m_EditorScene = nullptr;
 	Ref<AssetManager> m_assetManager = MakeRef<AssetManager>();
-	Ref<SceneSerializer> serializer = nullptr;
+	Ref<SceneSerializer> m_Serializer = nullptr;
 
 	// Panels
 	Ref<ContentBrowserPanel> m_ContentBrowserPanel;

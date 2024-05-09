@@ -137,7 +137,7 @@ void ViewportPanel::Draw()
 			std::wstring ws(path);
 			std::string p(ws.begin(), ws.end());
 
-			m_editor->serializer->DeSerialize((s_assetsPath /= p).string());
+			m_editor->OpenScene((s_assetsPath /= p).string());
 			m_editor->m_SceneHierarchyPanel->ClearSeletedEntity();
 			m_editor->m_GameViewPanel->resizeWindow();
 		}

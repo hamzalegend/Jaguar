@@ -14,6 +14,7 @@ extern "C" {
 	typedef struct _MonoObject MonoObject;
 	typedef struct _MonoMethod MonoMethod;
 	typedef struct _MonoAssembly MonoAssembly;
+	typedef struct _MonoImage MonoImage;
 }
 
 class ScriptClass
@@ -51,10 +52,14 @@ public:
 	
 	static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
 
+	static MonoImage* GetCoreAssemblyImage();
+
+
 private:
 	static void InitMono();
 	static void ShutDownMono();
 
+	friend class ScriptGlue;
 	friend class ScriptClass;
 
 };

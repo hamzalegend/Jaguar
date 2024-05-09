@@ -43,9 +43,14 @@ void EditorLayer::OnSceneStop()
 }
 
 
+void EditorLayer::OpenScene(std::filesystem::path path)
+{
+	m_Serializer->DeSerialize(path.string());
+}
+
 void EditorLayer::SaveScene(std::filesystem::path path)
 {
-	serializer->Serialize(std::filesystem::current_path().string() + std::string("/Assets/") + path.string());
+	m_Serializer->Serialize(std::filesystem::current_path().string() + std::string("/Assets/") + path.string());
 }
 
 
@@ -56,7 +61,7 @@ void EditorLayer::OnAttach()
 	Input::SetShowCursor(true);
 
 	m_scene = MakeRef<Scene>();
-	serializer = MakeRef<SceneSerializer>(m_scene, m_assetManager);
+	m_Serializer = MakeRef<SceneSerializer>(m_scene, m_assetManager);
 	m_scene->CreateEntity("Camera").AddComponent<CameraComponent>();
 
 	{
@@ -78,6 +83,7 @@ void EditorLayer::OnAttach()
 
 	ImguiLayer::init(Application::Get().GetWindow()->GetNative());
 };
+
 bool lstfrmsim;
 void EditorLayer::OnUpdate(float deltaTime)
 {
@@ -188,19 +194,13 @@ void EditorLayer::OnUIUpdate()
 		{
 			std::cout << p << std::endl;
 			mat = MakeRef<Material>();
-			// mat->Path = (s_assetsPath.string() + "/" + p);
-			// mat->AlbedoPath = (s_assetsPath.string() + "/" + "Textures/mario.png");
-			// mat->VertexShaderPath = (s_assetsPath.string() + "/" + "Textures/cube.png");
-			// mat->FragmentShaderPath = (s_assetsPath.string() + "/" + "Textures/w2all.jpg");
-
 			mat = AssetManager::LoadMaterial((s_assetsPath.string() + "/" + p).c_str());
-
 		}
 
 		if (mat)
 		{
 
-			// ImGui::Image((ImTextureID)mat->Albedo->GetImage(), {56, 56});
+			ImGui::Image((ImTextureID)mat->Albedo->GetImage(), {56, 56});
 			std::string p;
 
 
@@ -259,41 +259,10 @@ void EditorLayer::OnUIUpdate()
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 
-		// ImGui::Text("Hello, down!");
+		
 		if (ImGui::Button("Debug"))
 		{
-			// m_assetManager->Get<Texture>(tid);
-			// mat = MakeRef<Material>();
-			// mat->AlbedoPath
-			m_assetManager->SaveMaterial(path.c_str(), mat);
-		}
-		if (!mat)
-		{
 
-
-
-			/*if (ImGui::BeginDragDropTarget())
-			{
-				std::filesystem::path s_assetsPath = "Assets";
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
-				if (payload)
-				{
-					const wchar_t* path = (wchar_t*)payload->Data;
-
-					std::wstring ws(path);
-					std::string p(ws.begin(), ws.end());
-
-					// std::cout << p << "\n";
-
-
-
-					// m_scene = MakeRef<Scene>();
-					// SpriteRenderer.sprite.texturePath = (s_assetsPath /= p).string();
-					// SpriteRenderer.sprite.texture = MakeRef<Texture>(SpriteRenderer.sprite.texturePath.c_str());
-				}
-				ImGui::EndDragDropTarget();
-			}
-			*/
 		}
 
 		ImGui::End();
