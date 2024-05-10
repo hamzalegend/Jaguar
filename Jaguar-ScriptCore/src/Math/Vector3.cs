@@ -1,4 +1,6 @@
-﻿namespace Jaguar
+﻿using System;
+
+namespace Jaguar
 {
 	public struct Vector3
 	{
@@ -47,5 +49,11 @@
 			return new Vector3(vector.X * scalar, vector.Y * scalar, vector.Z * scalar);
 		}
 
-	}
+        public override string ToString()
+        {
+			return $"({X}, {Y}, {Z})";
+        }
+
+
+    }
 }

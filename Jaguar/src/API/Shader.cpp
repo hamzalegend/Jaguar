@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 
 Shader::Shader(const char* vpath, const char* fpath)
@@ -40,6 +41,7 @@ Shader::Shader(const char* vpath, const char* fpath)
 		}
 
 		else std::cout << "[ERROR]: Unable to open shader file '" + std::string(fpath) + "'\n";
+		// std::cout << std::filesystem::current_path() << "'\n";
 	}
 
 	const char* vsrc = vertSrc.c_str();

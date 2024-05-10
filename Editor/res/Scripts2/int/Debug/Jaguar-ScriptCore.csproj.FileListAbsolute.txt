@@ -1,6 +1,0 @@
-C:\Code\c++\Jaguar\Editor\res\Scripts\int\Debug\Jaguar-ScriptCore.csproj.AssemblyReference.cache
-C:\Code\c++\Jaguar\Editor\res\Scripts\int\Debug\Jaguar-ScriptCore.csproj.CoreCompileInputs.cache
-C:\Code\c++\Jaguar\Editor\res\Scripts\int\Debug\Jaguar-ScriptCore.dll
-C:\Code\c++\Jaguar\Editor\res\Scripts\int\Debug\Jaguar-ScriptCore.pdb
-C:\Code\c++\Jaguar\Editor\res\Scripts\Jaguar-ScriptCore.dll
-C:\Code\c++\Jaguar\Editor\res\Scripts\Jaguar-ScriptCore.pdb

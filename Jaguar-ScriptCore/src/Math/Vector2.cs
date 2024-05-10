@@ -28,5 +28,10 @@
 			return new Vector2(vector.X * scalar, vector.Y * scalar);
 		}
 
-	}
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
+        }
+
+    }
 }

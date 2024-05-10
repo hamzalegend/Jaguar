@@ -30,16 +30,16 @@ namespace Jaguar
     
     public class RigidBody2DComponent : Component
     {
-        public void RigidBody2DComponent_ApplyLinarImpulse(Vector2 impulse, Vector2 WorldPosition, bool wake)
+        public void ApplyLinarImpulse(Vector2 impulse, Vector2 WorldPosition, bool wake)
         {
             InternalCalls.RigidBody2DComponent_ApplyLinarImpulse(Entity.m_uuid,ref impulse,ref WorldPosition, wake);
         }
         
-        public void RigidBody2DComponent_ApplyLinarImpulseToCenter(Vector2 impulse, bool wake)
+        public void ApplyLinarImpulseToCenter(Vector2 impulse, bool wake)
         {
             InternalCalls.RigidBody2DComponent_ApplyLinarImpulseToCenter(Entity.m_uuid,ref impulse, wake);
         }
-        public void RigidBody2DComponent_ApplyForceToCenter(Vector2 force, bool wake)
+        public void ApplyForceToCenter(Vector2 force, bool wake)
         {
             InternalCalls.RigidBody2DComponent_ApplyForceToCenter(Entity.m_uuid, ref force, wake);
         }

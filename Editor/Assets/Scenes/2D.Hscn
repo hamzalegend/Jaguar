@@ -1,15 +1,15 @@
 Scene: Untitled Scene
 Entites:
-  - Entity: 13750277920597336825
+  - Entity: 1091407903
     TagComponent:
-      Tag: New Entity
+      Tag: mario
     TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Position: [-2.3548162, -2.54752445, 0]
+      Rotation: [0, 0, 3.29556131]
+      Scale: [0.599523187, 0.49999851, 0.5]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 255]
-      texturePath: Assets\Textures\white.png
+      Color: [0.630337358, 0.441514611, 0.439010322, 1]
+      texturePath: Assets\Textures\mario.png
     RigidBody2DComponent:
       Type: 1
       FixedRotation: false
@@ -18,35 +18,29 @@ Entites:
       size: [0.5, 0.5]
       Density: 1
       Friction: 0.5
-      Restitution: 0
+      Restitution: 0.600000024
       RestitutionThreshhold: 0.5
     ScriptComponent:
       ClassName: Sandbox.Player
-  - Entity: 4244239339
+  - Entity: 2270260776
     TagComponent:
-      Tag: sp2
+      Tag: camera
     TransformComponent:
-      Position: [-5.85865545, -2.21515894, -2]
-      Rotation: [0, 0, 0.827828646]
-      Scale: [0.649999857, 3.24129844, 0.649999976]
-    SpriteRendererComponent:
-      Color: [255, 255, 255, 255]
-      texturePath: Assets\Textures\body_Base_Color.png
-    RigidBody2DComponent:
-      Type: 0
-      FixedRotation: false
-    BoxCollider2DComponent:
-      offset: [0, 0]
-      size: [0.5, 0.5]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshhold: 0.5
+      Position: [-2.13793087, 0, 12]
+      Rotation: [0, 0, 0]
+      Scale: [0.999999523, 1, 0.999999523]
+    CameraComponent:
+      Primary: true
+      FOV: 90
+      NearPlane: 0.00999999978
+      FarPlane: 1000
+    ScriptComponent:
+      ClassName: Sandbox.Camera
   - Entity: 996670996
     TagComponent:
       Tag: grounds
     TransformComponent:
-      Position: [-0.287258178, -5.66564655, -2]
+      Position: [-0.287258178, -5.66564655, 0]
       Rotation: [0, 0, 0.153497264]
       Scale: [7.65307665, 6.25857067, 4.89796543]
     SpriteRendererComponent:
@@ -62,30 +56,36 @@ Entites:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshhold: 0.5
-  - Entity: 2270260776
+  - Entity: 4244239339
     TagComponent:
-      Tag: camera
+      Tag: sp2
     TransformComponent:
-      Position: [-8.68138027, 0, 10]
-      Rotation: [0, 0, 0]
-      Scale: [0.999999523, 1, 0.999999523]
-    CameraComponent:
-      Primary: true
-      FOV: 90
-      NearPlane: 0.00999999978
-      FarPlane: 1000
-    ScriptComponent:
-      ClassName: Sandbox.Camera
-  - Entity: 1091407903
-    TagComponent:
-      Tag: mario
-    TransformComponent:
-      Position: [-3.20642161, 0.321297228, -2]
-      Rotation: [0, 0, -0.404748619]
-      Scale: [0.599523187, 0.49999851, 0.5]
+      Position: [-5.85865545, -2.21515894, 0]
+      Rotation: [0, 0, 0.827828646]
+      Scale: [0.649999857, 3.24129844, 0.649999976]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 255]
-      texturePath: Assets\Textures\mario.png
+      Color: [255, 255, 255, 255]
+      texturePath: Assets\Textures\body_Base_Color.png
+    RigidBody2DComponent:
+      Type: 0
+      FixedRotation: false
+    BoxCollider2DComponent:
+      offset: [0, 0]
+      size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshhold: 0.5
+  - Entity: 2887377657
+    TagComponent:
+      Tag: square
+    TransformComponent:
+      Position: [-0.330514431, -1.98197925, 0]
+      Rotation: [0, 0, 0.150198609]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.232715726, 0.950244963, 0.998712599, 1]
+      texturePath: Assets\Textures\white.png
     RigidBody2DComponent:
       Type: 1
       FixedRotation: false
@@ -94,7 +94,7 @@ Entites:
       size: [0.5, 0.5]
       Density: 1
       Friction: 0.5
-      Restitution: 0.600000024
+      Restitution: 0
       RestitutionThreshhold: 0.5
     ScriptComponent:
       ClassName: Sandbox.Player

@@ -28,15 +28,9 @@ namespace Sandbox
             if (Input.GetKeyDown(KeyCode.Right))
                 velocity.X += 1;
 
-
-
-            
             Vector3 translation = Translation;
             translation += velocity * speed * deltatime;
             Translation = translation;
-
-
-
 
         }
     }

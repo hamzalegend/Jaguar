@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace Sandbox
         private TransformComponent transformComponent;
         private RigidBody2DComponent rb;
 
+        private bool prev;
+
         void OnCreate()
         {
             Console.WriteLine("OnCreate();");
@@ -25,33 +28,32 @@ namespace Sandbox
             transformComponent = GetComponent<TransformComponent>();
             rb = GetComponent<RigidBody2DComponent>();
         }
+
         void OnUpdate(float deltatime)
         {
-            float speed = 1000000f;
+            float speed = 500;
             Vector3 velocity = Vector3.Zero;
              
             if (Input.GetKeyDown(KeyCode.W))
-                velocity.Y += 1;
+                velocity.Y += speed;
 
             if (Input.GetKeyDown(KeyCode.S))
-                velocity.Y -= 1;
+                velocity.Y -= speed;
 
             if (Input.GetKeyDown(KeyCode.D))
-                velocity.X += 1;
+                velocity.X += speed;
 
             if (Input.GetKeyDown(KeyCode.A))
-                velocity.X -= 1;
+                velocity.X -= speed;
 
-
-
-            rb.RigidBody2DComponent_ApplyForceToCenter(velocity.XY, true);
-            // Vector3 translation = transformComponent.Translation;
-            // translation += velocity * speed * deltatime;
-            // transformComponent.Translation = translation;
-
-
-
-
+            if (Input.GetKeyDown(KeyCode.Space) && !prev)
+            {
+                rb.ApplyLinarImpulseToCenter(new Vector2(0, 1f), true);
+            }
+            prev = Input.GetKeyDown(KeyCode.Space);
+  
+            // Console.WriteLine((velocity.XY * deltatime));
+            rb.ApplyForceToCenter(velocity.XY * deltatime, true);
         }
     }
 }
