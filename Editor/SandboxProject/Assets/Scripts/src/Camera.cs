@@ -11,8 +11,10 @@ namespace Sandbox
 {
     public class Camera : Entity
     {
+        float t;
         void OnUpdate(float deltatime)
         {
+            t += deltatime;
             float speed = 5;
             Vector3 velocity = Vector3.Zero;
 
@@ -27,8 +29,8 @@ namespace Sandbox
 
             if (Input.GetKeyDown(KeyCode.Right))
                 velocity.X += 1;
-
             Vector3 translation = Translation;
+            translation.X = 2*(float)Math.Sin(t);
             translation += velocity * speed * deltatime;
             Translation = translation;
 

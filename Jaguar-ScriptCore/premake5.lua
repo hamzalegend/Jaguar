@@ -5,8 +5,8 @@ project "Jaguar-ScriptCore"
     dotnetframework "4.7.2"
     -- staticruntime "off"
 
-    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
+    targetdir ("../Editor/res/Scripts")
+    objdir ("../Editor/res/Scripts/int")
 
     files
     {
@@ -14,10 +14,10 @@ project "Jaguar-ScriptCore"
         "./src/**.cs",
     }
 
-    postbuildcommands {
-        "{COPY} %{wks.location}/bin/" .. outputdir .. "/%{prj.name}/Jaguar-ScriptCore.dll %{wks.location}/Editor/res/Scripts",
-        "{COPY} %{wks.location}/bin/" .. outputdir .. "/%{prj.name}/Jaguar-ScriptCore.dll %{wks.location}/SandBox/res/Scripts",
-      }
+    -- postbuildcommands {
+    --     "{COPY} " .. JaguarRootDir .. "bin/" .. outputdir .. "/%{prj.name}/Jaguar-ScriptCore.dll %{wks.location}/Editor/res/Scripts",
+    --     "{COPY} " .. JaguarRootDir .. "bin/" .. outputdir .. "/%{prj.name}/Jaguar-ScriptCore.dll %{wks.location}/SandBox/res/Scripts",
+    -- }
 
     filter "system:windows"
         filter "configurations:Debug"

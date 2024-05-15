@@ -1,0 +1,9 @@
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Binaries\Sandbox.dll
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Binaries\Sandbox.pdb
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Binaries\Jaguar-ScriptCore.dll
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Binaries\Jaguar-ScriptCore.pdb
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Intermediates\Debug\Sandbox.csproj.AssemblyReference.cache
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Intermediates\Debug\Sandbox.csproj.CoreCompileInputs.cache
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Intermediates\Debug\Sandbox.csproj.CopyComplete
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Intermediates\Debug\Sandbox.dll
+C:\Code\c++\Jaguar\Editor\SandboxProject\Assets\Scripts\Intermediates\Debug\Sandbox.pdb

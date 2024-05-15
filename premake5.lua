@@ -13,6 +13,7 @@ workspace "Jaguar"
     }
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+JaguarRootDir = "./"
 group "Core"
 
 include "Jaguar"
