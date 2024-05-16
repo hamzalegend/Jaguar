@@ -1,43 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Jaguar
+﻿namespace Jaguar
 {
-    public class Component 
+    public class Component
     {
         public Entity Entity { get; internal set; }
     }
 
     public class TransformComponent : Component
     {
-        public Vector3 Translation 
-        { 
-            get 
+        public Vector3 Translation
+        {
+            get
             {
                 InternalCalls.TransformComponent_GetTranslation(Entity.m_uuid, out Vector3 translation);
                 return translation;
             }
-            
+
             set
             {
                 InternalCalls.TransformComponent_SetTranslation(Entity.m_uuid, ref value);
             }
         }
     }
-    
+
     public class RigidBody2DComponent : Component
     {
         public void ApplyLinarImpulse(Vector2 impulse, Vector2 WorldPosition, bool wake)
         {
-            InternalCalls.RigidBody2DComponent_ApplyLinarImpulse(Entity.m_uuid,ref impulse,ref WorldPosition, wake);
+            InternalCalls.RigidBody2DComponent_ApplyLinarImpulse(Entity.m_uuid, ref impulse, ref WorldPosition, wake);
         }
-        
+
         public void ApplyLinarImpulseToCenter(Vector2 impulse, bool wake)
         {
-            InternalCalls.RigidBody2DComponent_ApplyLinarImpulseToCenter(Entity.m_uuid,ref impulse, wake);
+            InternalCalls.RigidBody2DComponent_ApplyLinarImpulseToCenter(Entity.m_uuid, ref impulse, wake);
         }
         public void ApplyForceToCenter(Vector2 force, bool wake)
         {

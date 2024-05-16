@@ -2,6 +2,7 @@
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
+#include "mono/metadata/tabledefs.h"
 
 #include <string>
 #include <fstream>
@@ -15,6 +16,26 @@
 
 #include <unordered_map>
 #include <Engine.h>
+
+#include "scene/Components.h"
+#include "Core/UUID.h"
+
+static std::unordered_map<std::string, ScriptFieldType> s_ScriptFieldTypeMap =
+{
+    {"System.Single", ScriptFieldType::Float},
+    {"System.Double", ScriptFieldType::Double},
+    {"System.Boolean", ScriptFieldType::Bool},
+    {"System.Int64", ScriptFieldType::Int},
+    {"System.UInt32", ScriptFieldType::Uint},
+    {"System.Int16", ScriptFieldType::Short},
+    {"System.Byte.", ScriptFieldType::Byte},
+    {"System.Long", ScriptFieldType::Long},
+
+    {"Jaguar.Vector2", ScriptFieldType::Vector2},
+    {"Jaguar.Vector3", ScriptFieldType::Vector3},
+    {"Jaguar.Vector4", ScriptFieldType::Vector4},
+    {"Jaguar.Entity", ScriptFieldType::Entity},
+};
 
 namespace Utils
 {
@@ -88,6 +109,48 @@ namespace Utils
 
             printf("%s.%s\n", nameSpace, name);
         }
+    }
+
+
+
+    ScriptFieldType MonoTypeToScriptFieldType(MonoType* monotype)
+    {
+        std::string name = mono_type_get_name(monotype);
+        if (s_ScriptFieldTypeMap.find(name) == s_ScriptFieldTypeMap.end()) return ScriptFieldType::None;
+        return s_ScriptFieldTypeMap.at(name);
+    }
+
+    const char* ScriptFieldTypeToString(ScriptFieldType type)
+    {
+        switch (type)
+        {
+        case ScriptFieldType::None:
+            return "None";
+        case ScriptFieldType::Float:
+            return "Float";
+        case ScriptFieldType::Double:
+            return "Double";
+        case ScriptFieldType::Vector2:
+            return "Vector2";
+        case ScriptFieldType::Vector3:
+            return "Vector3";
+        case ScriptFieldType::Vector4:
+            return "Vector4";
+        case ScriptFieldType::Int:
+            return "Int";
+        case ScriptFieldType::Uint:
+            return "Uint";
+        case ScriptFieldType::Bool:
+            return "Bool";
+        case ScriptFieldType::Short:
+            return "Short";
+        case ScriptFieldType::Byte:
+            return "Byte";
+        case ScriptFieldType::Entity:
+            return "Entity";
+        }
+
+        return "UnkNONE type";
     }
 }
 
@@ -188,7 +251,7 @@ void ScriptEngine::LoadAssemblyClasses()
     const MonoTableInfo *typeDefinitionsTable = mono_image_get_table_info(s_Data->AppAssemblyImage, MONO_TABLE_TYPEDEF);
     int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 
-    MonoClass *EntityClass = mono_class_from_name(s_Data->CoreAssemblyImage, "Jaguar", "Entity");
+    MonoClass* EntityClass = mono_class_from_name(s_Data->CoreAssemblyImage, "Jaguar", "Entity");
     for (int32_t i = 0; i < numTypes; i++)
     {
         uint32_t cols[MONO_TYPEDEF_SIZE];
@@ -207,11 +270,29 @@ void ScriptEngine::LoadAssemblyClasses()
             fullname = name;
 
         if (monoClass == EntityClass) continue;
-        if (isEntity)
-            s_Data->EntityClasses[fullname] = MakeRef<ScriptClass>(nameSpace, name);
-    }
-}
 
+        if (!isEntity) continue;
+        Ref<ScriptClass> SC = MakeRef<ScriptClass>(nameSpace, name);
+        s_Data->EntityClasses[fullname] = SC;
+        
+        void* fields = nullptr;
+        MonoClassField* field;
+        while (MonoClassField* field = mono_class_get_fields(monoClass, &fields))
+        {
+            uint32_t flags = mono_field_get_flags(field);
+            if (flags & FIELD_ATTRIBUTE_PUBLIC)
+            {
+                // std::cout << mono_field_get_name(field) << " is public" << ";\n";
+
+                MonoType* type = mono_field_get_type(field);
+                ScriptFieldType Fieldtype = Utils::MonoTypeToScriptFieldType(type);
+                std::string fieldname = mono_field_get_name(field);
+                SC->m_Fields[fieldname] = { Fieldtype, fieldname, field};
+            }
+        }   
+    }
+
+}
 
 void ScriptEngine::OnRuntimeStart(Scene* scene)
 {
@@ -286,6 +367,13 @@ MonoImage* ScriptEngine::GetCoreAssemblyImage()
     return s_Data->CoreAssemblyImage;
 }
 
+Ref<ScriptInstance> ScriptEngine::GetEntityScriptInstance(Jaguar::UUID uuid)
+{
+    auto it = s_Data->EntityInstances.find(uuid);
+    if (it == s_Data->EntityInstances.end()) return nullptr;
+    return it->second;
+}
+
 
 //
 
@@ -348,4 +436,15 @@ void ScriptInstance::InvokeOnUpdateMethod(float dt)
     if (OnUpdateMethod)
         m_ScriptCLass->InvokeMethod(m_Instance, OnUpdateMethod, &param);
 
+}
+
+void ScriptInstance::GetFieldValueinternal(std::string name, void* buffer)
+{
+    mono_field_get_value(m_Instance, m_ScriptCLass->GetFields().find(name)->second.field, buffer);
+}
+
+void ScriptInstance::SetFieldValueinternal(std::string name, const void* value)
+{
+
+    mono_field_set_value(m_Instance, m_ScriptCLass->GetFields().find(name)->second.field, (void*)value);
 }

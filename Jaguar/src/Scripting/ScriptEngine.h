@@ -15,7 +15,24 @@ extern "C" {
 	typedef struct _MonoMethod MonoMethod;
 	typedef struct _MonoAssembly MonoAssembly;
 	typedef struct _MonoImage MonoImage;
+	typedef struct _MonoClassField MonoClassField;
 }
+
+
+enum class ScriptFieldType
+{
+	None = 0,
+	Float, Double, Vector2, Vector3, Vector4,
+	Int, Uint, Bool, Short, Byte, Long, Entity
+};
+
+
+struct ScriptFied
+{
+	ScriptFieldType type;
+	std::string name;
+	MonoClassField* field;
+};
 
 class ScriptClass
 {
@@ -27,13 +44,61 @@ public:
 	MonoMethod* GetMethod(const std::string& name, int peraCount);
 	MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params = nullptr);
 
+
+	inline std::unordered_map<std::string, ScriptFied> GetFields() { return m_Fields; };
+
 private:
 	std::string m_classNamespace;
 	std::string m_className;
 
+	std::unordered_map<std::string, ScriptFied> m_Fields;
+
 	MonoClass* m_MonoClass = nullptr;
+
+	friend class ScriptEngine;
 };
 
+
+class JAGUAR_API ScriptInstance
+{
+public:
+	ScriptInstance(Ref<ScriptClass>, Entity entity);
+
+
+	void InvokeOnCreateMethod();
+	void InvokeOnUpdateMethod(float dt);
+
+	inline Ref<ScriptClass> GetScriptClass() {	return m_ScriptCLass; };
+
+	template<typename T>
+	inline T GetFieldValue(std::string name)
+	{
+		GetFieldValueinternal(name, s_FieldValueBuffer);
+		return *(T*)s_FieldValueBuffer;
+		
+	}
+	
+	template<typename T>
+	inline void SetFieldValue(std::string name,const T& value)
+	{
+		SetFieldValueinternal(name, &value);		
+	}
+
+private:
+	void GetFieldValueinternal(std::string name, void* buffer);
+	void SetFieldValueinternal(std::string name, const void* value);
+
+
+	Ref<ScriptClass> m_ScriptCLass;
+
+	MonoObject* m_Instance = nullptr;
+	MonoMethod* Constructor = nullptr;
+	MonoMethod* OnCreateMethod = nullptr;
+	MonoMethod* OnUpdateMethod = nullptr;
+
+
+	inline static char s_FieldValueBuffer[16];
+};
 
 class JAGUAR_API ScriptEngine 
 {
@@ -55,6 +120,8 @@ public:
 
 	static MonoImage* GetCoreAssemblyImage();
 
+	static Ref<ScriptInstance> GetEntityScriptInstance(Jaguar::UUID uuid);
+
 
 private:
 	static void InitMono();
@@ -65,23 +132,4 @@ private:
 
 };
 
-
-class ScriptInstance
-{
-public:
-	ScriptInstance(Ref<ScriptClass>, Entity entity);
-
-
-	void InvokeOnCreateMethod();
-	void InvokeOnUpdateMethod(float dt);
-
-private:
-	Ref<ScriptClass> m_ScriptCLass;
-
-	MonoObject* m_Instance = nullptr;
-	MonoMethod* Constructor = nullptr;
-	MonoMethod* OnCreateMethod = nullptr;
-	MonoMethod* OnUpdateMethod = nullptr;
-
-};
 

@@ -16,6 +16,19 @@ namespace Sandbox
         private RigidBody2DComponent rb;
 
         private bool prev;
+        public bool isgrounded = false;
+        public float speed = 500;
+        public float JumpForce = 1;
+
+        bool a1;
+        byte a2;
+        short a16;
+        uint ad16;
+        long a3;
+        Entity a4;
+        Vector2 a5;
+        Vector3 a6;
+        
 
         void OnCreate()
         {
@@ -31,7 +44,7 @@ namespace Sandbox
 
         void OnUpdate(float deltatime)
         {
-            float speed = 500;
+            
             Vector3 velocity = Vector3.Zero;
              
             if (Input.GetKeyDown(KeyCode.W))
@@ -48,7 +61,7 @@ namespace Sandbox
 
             if (Input.GetKeyDown(KeyCode.Space) && !prev)
             {
-                rb.ApplyLinarImpulseToCenter(new Vector2(0, 1f), true);
+                rb.ApplyLinarImpulseToCenter(new Vector2(0, JumpForce), true);
             }
             prev = Input.GetKeyDown(KeyCode.Space);
   

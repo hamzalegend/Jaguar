@@ -51,7 +51,7 @@ public:
 		return m_Scene->m_Registry.remove<T>(m_EntityHandle);
 	}
 
-	// Jaguar::UUID GetUUID() { return GetComponent<UUIDComponent>().m_UUID; }
+	// inline Jaguar::UUID GetUUID() { return GetComponent<UUIDComponent>().uuid; }
 
 	operator uint32_t() const {
 		return (uint32_t)m_EntityHandle;

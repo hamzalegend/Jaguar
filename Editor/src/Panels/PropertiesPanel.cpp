@@ -8,6 +8,8 @@
 #include <unordered_map>
 
 #include "Scripting/ScriptEngine.h"
+#include "Core/UUID.h"
+
 
 PropertiesPanel::PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView)
 	:m_sceneHierarchyPanel(SHP), m_viewport(viewport), m_gameView(gameView)
@@ -268,7 +270,6 @@ void PropertiesPanel::DrawComponents(Entity e)
 			ImGui::DragFloat("OuterCutOff", &LC.OuterCutOff, 1);
 		}
 		});
-
 	DrawComponent<ScriptComponent>("Script Component", e, [](Entity e) {
 		auto& SC = e.GetComponent<ScriptComponent>();
 
@@ -282,6 +283,24 @@ void PropertiesPanel::DrawComponents(Entity e)
 
 		if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 			SC.ClassName = buffer;
+
+		Ref<ScriptInstance> SI = ScriptEngine::GetEntityScriptInstance(e.GetComponent<UUIDComponent>().uuid);
+		if (SI)
+		{
+			auto fields = SI->GetScriptClass()->GetFields();
+			for (const auto& [name, field] : fields)
+			{
+				if (field.type == ScriptFieldType::Float)
+				{
+					float data = SI->GetFieldValue<float>(name);
+					if (ImGui::DragFloat(name.c_str(), &data))
+					{
+						SI->SetFieldValue(name, data);
+					}
+				}
+
+			}
+		}
 
 		if (!scriptClassExists)
 			ImGui::PopStyleColor();

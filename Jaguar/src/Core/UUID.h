@@ -2,10 +2,11 @@
 
 
 #include <xhash>
+#include "Core/DEFINES.h"
 
 namespace Jaguar
 {
-	class UUID
+	class JAGUAR_API UUID
 	{
 	public:
 		UUID();

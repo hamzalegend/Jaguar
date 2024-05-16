@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace Jaguar
 {
@@ -42,7 +41,7 @@ namespace Jaguar
         }
 
         public ulong m_uuid;
-        
+
     }
-    
+
 }
