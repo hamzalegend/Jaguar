@@ -170,6 +170,8 @@ struct ScriptEngineData
     std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
     std::unordered_map<Jaguar::UUID, Ref<ScriptInstance>> EntityInstances;
 
+    std::unordered_map<Jaguar::UUID, std::unordered_map<std::string, ScriptFieldInstance>> ScriptFieldInstances;
+
     Scene* SceneContext;
 };
 
@@ -241,7 +243,15 @@ void ScriptEngine::LoadAppAssembly(const std::filesystem::path filepath)
 
 std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses()
 {
-    return std::unordered_map<std::string, Ref<ScriptClass>>();
+    return s_Data->EntityClasses;
+}
+
+Ref<ScriptClass> ScriptEngine::GetEntityClass(std::string name)
+{
+    auto& it = s_Data->EntityClasses.find(name);
+    if (it != s_Data->EntityClasses.end())
+        return it->second;
+    return nullptr;
 }
 
 void ScriptEngine::LoadAssemblyClasses()
@@ -299,9 +309,40 @@ void ScriptEngine::OnRuntimeStart(Scene* scene)
     s_Data->SceneContext = scene;
 }
 
+void ScriptEngine::OnEditorStart(Scene* scene)
+{
+    for (auto& e : scene->m_Registry.view<ScriptComponent>())
+    {
+        Entity entity = { e, scene };
+        const auto& SC = entity.GetComponent<ScriptComponent>();
+        Jaguar::UUID uuid = entity.GetComponent<UUIDComponent>().uuid;
+
+
+
+        
+        if (!ScriptEngine::EntityClassExists(SC.ClassName))  return;
+
+        auto& scriptClass = ScriptEngine::GetEntityClass(SC.ClassName);
+        auto& fields = scriptClass->GetFields();
+
+        std::unordered_map<std::string, ScriptField>::iterator it;
+        for (it = fields.begin(); it != fields.end(); it++)
+        {
+            ScriptFieldInstance instance;
+            instance.field = it->second;
+            instance.SetFieldValue(
+                ScriptInstance(scriptClass, entity).GetFieldValue<float>(it->first) // if not saved on disk
+            );
+            
+            s_Data->ScriptFieldInstances[uuid][it->first] = instance;
+        }
+    }
+}
+
+
 void ScriptEngine::OnRuntimeStop()
 {
-    s_Data->EntityClasses.clear();
+    // s_Data->EntityClasses.clear();
 }
 
 
@@ -311,8 +352,20 @@ void ScriptEngine::OnCreateEntity(Entity entity)
     if (ScriptEngine::EntityClassExists(sc.ClassName))
     {
         Ref<ScriptInstance> instance = MakeRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
+        Jaguar::UUID uuid = entity.GetComponent<UUIDComponent>().uuid;
 
-        s_Data->EntityInstances[entity.GetComponent<UUIDComponent>().uuid] = instance;
+        s_Data->EntityInstances[uuid] = instance;
+
+        // fields stuff
+        auto& mp = s_Data->ScriptFieldInstances.find(uuid);
+        std::unordered_map<std::string, ScriptFieldInstance>::iterator it;
+        for (it = mp->second.begin(); it != mp->second.end(); it++)
+        {
+            auto StringFieldMap = s_Data->ScriptFieldInstances.find(uuid)->second;
+            auto value = StringFieldMap.find(it->first)->second.GetValue<float>();
+            instance->SetFieldValue(it->first, value);
+            it->second.SetFieldValue(value);
+        }
 
         instance->InvokeOnCreateMethod();
     }
@@ -372,6 +425,20 @@ Ref<ScriptInstance> ScriptEngine::GetEntityScriptInstance(Jaguar::UUID uuid)
     auto it = s_Data->EntityInstances.find(uuid);
     if (it == s_Data->EntityInstances.end()) return nullptr;
     return it->second;
+}
+
+ScriptFieldInstance ScriptEngine::GetScriptFieldInstance(std::string name, Jaguar::UUID uuid)
+{
+    return s_Data->ScriptFieldInstances[uuid][name];
+}
+
+void ScriptEngine::SetScriptFieldInstance(std::string name, Jaguar::UUID uuid, ScriptFieldInstance scriptFieldInstance)
+{
+    s_Data->ScriptFieldInstances[uuid][name] = scriptFieldInstance;
+}
+
+static void debug(Jaguar::UUID id)
+{
 }
 
 

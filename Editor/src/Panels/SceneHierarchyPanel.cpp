@@ -45,6 +45,11 @@ void SceneHierarchyPanel::DrawEntityNode(Entity e)
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ((m_selectedEntity == e) ? ImGuiTreeNodeFlags_Selected : 0);
 
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)e, flags, name.c_str());
+	if (ImGui::BeginDragDropSource())
+	{;
+		ImGui::SetDragDropPayload("UUID", (const void*)&e.GetComponent<UUIDComponent>().uuid, sizeof(Jaguar::UUID));
+		ImGui::EndDragDropSource();
+	}
 
 	if (ImGui::IsItemClicked())
 	{

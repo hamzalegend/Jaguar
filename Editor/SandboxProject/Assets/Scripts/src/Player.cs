@@ -16,7 +16,7 @@ namespace Sandbox
         private RigidBody2DComponent rb;
 
         private bool prev;
-        public bool isgrounded = false;
+        // public bool isgrounded = false;
         public float speed = 500;
         public float JumpForce = 1;
 

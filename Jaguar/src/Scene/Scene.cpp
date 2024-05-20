@@ -107,7 +107,6 @@ for (auto e : idView)
 CopyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
 
 return newScene;
-// return nullptr;
 }
 Entity Scene::CreateEntity(const std::string& name)
 {
@@ -129,10 +128,6 @@ Entity Scene::CreateEntityWithUUID(uint64_t uuid, const std::string& name)
 // 	return Entity();
 }
 
-// Entity Scene::CreateEntityWithUUID(const std::string& name, UUID uuid)
-// {
-// 	return Entity();
-// }
 
 void Scene::DestroyEntity(Entity e)
 {
@@ -268,8 +263,8 @@ void Scene::clear()
 void Scene::OnRuntimeStart()
 {
 	OnPhysicsStart();
-	ScriptEngine::OnRuntimeStart(this);
 
+	ScriptEngine::OnRuntimeStart(this);
 
 	auto view = m_Registry.view<ScriptComponent>();
 	for (auto e : view)
@@ -298,6 +293,7 @@ void Scene::OnUpdateRuntime(float deltaTime)
 
 void Scene::OnRuntimeStop()
 {
+	ScriptEngine::OnRuntimeStop();
 	OnPhysicsStop();
 }
 

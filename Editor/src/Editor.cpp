@@ -6,6 +6,7 @@
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
 #include "Scene/Scene.h"
+#include "Scripting/ScriptEngine.h"
 
 
 #include <window/Input.h>
@@ -46,6 +47,7 @@ void EditorLayer::OnSceneStop()
 void EditorLayer::OpenScene(std::filesystem::path path)
 {
 	m_Serializer->DeSerialize(path.string());
+	ScriptEngine::OnEditorStart(m_scene.get());
 }
 
 void EditorLayer::SaveScene(std::filesystem::path path)
@@ -79,7 +81,7 @@ void EditorLayer::OnAttach()
 	m_SceneHierarchyPanel = MakeRef<SceneHierarchyPanel>(m_scene);
 	m_ViewportPanel = MakeRef<ViewportPanel>(this);
 	m_GameViewPanel = MakeRef<GameView>(m_GameViewFrameBuffer, m_scene);
-	m_PropertiesPanel = MakeRef<PropertiesPanel>(m_SceneHierarchyPanel, m_ViewportPanel, m_GameViewPanel);
+	m_PropertiesPanel = MakeRef<PropertiesPanel>(m_SceneHierarchyPanel, m_ViewportPanel, m_GameViewPanel, &m_inPlayMode);
 
 	ImguiLayer::init(Application::Get().GetWindow()->GetNative());
 };
@@ -189,7 +191,7 @@ void EditorLayer::OnUIUpdate()
 		{
 			ImGui::Button("Materail");
 		}
-		std::string p = ImguiLayer::RecvDragDrop();
+		std::string p = ImguiLayer::RecvDragDrop("CONTENT_BROWSER_ITEM");
 		if (p != "") // if you drag in a material
 		{
 			std::cout << p << std::endl;
@@ -205,7 +207,7 @@ void EditorLayer::OnUIUpdate()
 
 
 			ImGui::Button("Vertex Shader");
-			p = ImguiLayer::RecvDragDrop();
+			p = ImguiLayer::RecvDragDrop("CONTENT_BROWSER_ITEM");
 			if (p != "")
 			{
 				mat->VertexShaderPath = "Assets/" + p;
@@ -214,7 +216,7 @@ void EditorLayer::OnUIUpdate()
 
 
 			ImGui::Button("Fragment Shader");
-			p = ImguiLayer::RecvDragDrop();
+			p = ImguiLayer::RecvDragDrop("CONTENT_BROWSER_ITEM");
 			if (p != "")
 			{
 				mat->FragmentShaderPath = "Assets/" + p;
@@ -223,7 +225,7 @@ void EditorLayer::OnUIUpdate()
 
 
 			ImGui::Button("Albedo");
-			p = ImguiLayer::RecvDragDrop();
+			p = ImguiLayer::RecvDragDrop("CONTENT_BROWSER_ITEM");
 			if (p != "")
 			{
 				mat->AlbedoPath = "Assets/" + p;
@@ -258,11 +260,12 @@ void EditorLayer::OnUIUpdate()
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-
+		ImGui::Button("uuid");
+		auto& a = ImguiLayer::RecvDragDrop("UUID");
 		
 		if (ImGui::Button("Debug"))
 		{
-
+			logh(a.c_str());
 		}
 
 		ImGui::End();

@@ -27,11 +27,37 @@ enum class ScriptFieldType
 };
 
 
-struct ScriptFied
+struct ScriptField
 {
 	ScriptFieldType type;
 	std::string name;
 	MonoClassField* field;
+};
+
+struct ScriptFieldInstance
+{
+	ScriptField field;
+
+	template<typename T>
+	inline T GetValue()
+	{
+		return *(T*)m_Buffer;
+	}
+
+	template<typename T>
+	inline void SetFieldValue(T value)
+	{
+		static_assert(sizeof(T) <= 8);
+
+		// logh(value);
+		// logh(*(T*)m_Data);
+		memcpy(m_Buffer, &value, sizeof(T));
+	}
+
+	const char* GetBuffer() const { return m_Buffer; }
+
+private:
+	char m_Buffer[8];
 };
 
 class ScriptClass
@@ -45,13 +71,13 @@ public:
 	MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params = nullptr);
 
 
-	inline std::unordered_map<std::string, ScriptFied> GetFields() { return m_Fields; };
+	inline std::unordered_map<std::string, ScriptField> GetFields() { return m_Fields; };
 
 private:
 	std::string m_classNamespace;
 	std::string m_className;
 
-	std::unordered_map<std::string, ScriptFied> m_Fields;
+	std::unordered_map<std::string, ScriptField> m_Fields;
 
 	MonoClass* m_MonoClass = nullptr;
 
@@ -110,6 +136,7 @@ public:
 	static void LoadAppAssembly(const std::filesystem::path filepath);
 	static void LoadAssemblyClasses();
 	static void OnRuntimeStart(Scene* scene);
+	static void OnEditorStart(Scene* scene);
 	static void OnRuntimeStop();
 	static void OnCreateEntity(Entity entity);
 	static void OnUpdateEntity(Entity entity, float deltatime);
@@ -117,10 +144,15 @@ public:
 	static MonoObject* InstantiateClass(MonoClass* monoClass);
 	
 	static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
+	static Ref<ScriptClass> GetEntityClass(std::string name);
 
 	static MonoImage* GetCoreAssemblyImage();
 
 	static Ref<ScriptInstance> GetEntityScriptInstance(Jaguar::UUID uuid);
+
+	static ScriptFieldInstance GetScriptFieldInstance(std::string name, Jaguar::UUID uuid);
+	static void SetScriptFieldInstance(std::string name, Jaguar::UUID uuid, ScriptFieldInstance scriptFieldInstance);
+	static void debug(Jaguar::UUID id);
 
 
 private:

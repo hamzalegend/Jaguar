@@ -34,8 +34,6 @@ public:
 	void OnRuntimeStop();
 
 	Ref<Shader> shader;
-	// Ref<Texture> texture1;
-
 
 private:
 
@@ -53,5 +51,6 @@ private:
 	friend class GameView;
 	friend class Renderer;
 	friend class EditorLayer;
+	friend class ScriptEngine;
 };
 

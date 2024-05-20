@@ -11,8 +11,8 @@
 #include "Core/UUID.h"
 
 
-PropertiesPanel::PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView)
-	:m_sceneHierarchyPanel(SHP), m_viewport(viewport), m_gameView(gameView)
+PropertiesPanel::PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView, bool* ipm)
+	:m_sceneHierarchyPanel(SHP), m_viewport(viewport), m_gameView(gameView), m_inplayMode(ipm)
 {
 }
 
@@ -57,9 +57,10 @@ void PropertiesPanel::Draw()
 
 	ImGui::End();
 }
-
+static bool IsPlayMode;
 void PropertiesPanel::DrawComponents(Entity e)
-{
+{	
+	IsPlayMode = InPlayMode();
 
 	if (e.HasComponent<TagComponent>())
 	{
@@ -132,7 +133,7 @@ void PropertiesPanel::DrawComponents(Entity e)
 
 		ImGui::Button("Texture");
 		std::filesystem::path s_assetsPath = "Assets";
-		std::string p = ImguiLayer::RecvDragDrop();
+		std::string p = ImguiLayer::RecvDragDrop("CONTENT_BROWSER_ITEM");
 		if (p != "") // if you drag in a texture
 		{
 			std::cout << p << "\n";
@@ -155,7 +156,7 @@ void PropertiesPanel::DrawComponents(Entity e)
 		ImGui::Text(("Path: " + MeshRenderer.mesh.meshPath).c_str());
 		ImGui::Button("Model");
 		std::filesystem::path s_assetsPath = "Assets";
-		std::string p = ImguiLayer::RecvDragDrop();
+		std::string p = ImguiLayer::RecvDragDrop("CONTENT_BROWSER_ITEM");
 		if (p != "") // if you drag in a model
 		{
 			std::cout << p << "\n";
@@ -174,7 +175,7 @@ void PropertiesPanel::DrawComponents(Entity e)
 		if (material)
 			ImGui::Text(("Path: " + material->Path).c_str());
 		ImGui::Button("Material");
-		p = ImguiLayer::RecvDragDrop();
+		p = ImguiLayer::RecvDragDrop("CONTENT_BROWSER_ITEM");
 		if (p != "") // if you drag in a material
 		{
 			std::cout << p << std::endl;		
@@ -284,18 +285,33 @@ void PropertiesPanel::DrawComponents(Entity e)
 		if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 			SC.ClassName = buffer;
 
-		Ref<ScriptInstance> SI = ScriptEngine::GetEntityScriptInstance(e.GetComponent<UUIDComponent>().uuid);
-		if (SI)
+		const Jaguar::UUID uuid = e.GetComponent<UUIDComponent>().uuid;
+		Ref<ScriptInstance> SI = ScriptEngine::GetEntityScriptInstance(uuid);
+
+		if (scriptClassExists)
 		{
-			auto fields = SI->GetScriptClass()->GetFields();
-			for (const auto& [name, field] : fields)
+			auto EntityClass = ScriptEngine::GetEntityClasses().find(SC.ClassName)->second;
+			for (const auto& [name, field] : EntityClass->GetFields())
 			{
 				if (field.type == ScriptFieldType::Float)
 				{
-					float data = SI->GetFieldValue<float>(name);
+					auto& instance = ScriptEngine::GetScriptFieldInstance(name, uuid);
+					float data = 0;
+					if (IsPlayMode)	
+						data = SI->GetFieldValue<float>(name);
+					else data = instance.GetValue<float>();
+					
 					if (ImGui::DragFloat(name.c_str(), &data))
 					{
-						SI->SetFieldValue(name, data);
+						if (IsPlayMode)
+						{
+							if (SI) SI->SetFieldValue(name, data);
+						}
+						else
+						{
+							instance.SetFieldValue(data);
+							ScriptEngine::SetScriptFieldInstance(name, uuid, instance);
+						}
 					}
 				}
 

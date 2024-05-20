@@ -70,12 +70,12 @@ void ImguiLayer::Destroy()
 	ImGui::DestroyContext();
 }
 
-std::string ImguiLayer::RecvDragDrop()
+std::string ImguiLayer::RecvDragDrop(std::string type)
 {
 	std::string p;
 	if (ImGui::BeginDragDropTarget())
 	{
-		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(type.c_str());
 		if (payload)
 		{
 			const wchar_t* path = (wchar_t*)payload->Data;

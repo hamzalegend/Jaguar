@@ -29,7 +29,7 @@ public:
 	static void End();
 	static void Destroy();
 
-	static std::string RecvDragDrop();
+	static std::string RecvDragDrop(std::string type);
 
 private:
 	// Scene* m_scene;
