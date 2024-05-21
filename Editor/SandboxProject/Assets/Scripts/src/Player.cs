@@ -16,9 +16,9 @@ namespace Sandbox
         private RigidBody2DComponent rb;
 
         private bool prev;
-        // public bool isgrounded = false;
+        public bool CanJump = false;
         public float speed = 500;
-        public float JumpForce = 1;
+        public int JumpForce = 1;
 
         bool a1;
         byte a2;
@@ -59,7 +59,7 @@ namespace Sandbox
             if (Input.GetKeyDown(KeyCode.A))
                 velocity.X -= speed;
 
-            if (Input.GetKeyDown(KeyCode.Space) && !prev)
+            if (Input.GetKeyDown(KeyCode.Space) && !prev && CanJump)
             {
                 rb.ApplyLinarImpulseToCenter(new Vector2(0, JumpForce), true);
             }

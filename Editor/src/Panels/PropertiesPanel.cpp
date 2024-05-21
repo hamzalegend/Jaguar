@@ -273,6 +273,7 @@ void PropertiesPanel::DrawComponents(Entity e)
 		});
 	DrawComponent<ScriptComponent>("Script Component", e, [](Entity e) {
 		auto& SC = e.GetComponent<ScriptComponent>();
+		const Jaguar::UUID uuid = e.GetComponent<UUIDComponent>().uuid;
 
 		bool scriptClassExists = ScriptEngine::EntityClassExists(SC.ClassName);
 
@@ -285,7 +286,6 @@ void PropertiesPanel::DrawComponents(Entity e)
 		if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 			SC.ClassName = buffer;
 
-		const Jaguar::UUID uuid = e.GetComponent<UUIDComponent>().uuid;
 		Ref<ScriptInstance> SI = ScriptEngine::GetEntityScriptInstance(uuid);
 
 		if (scriptClassExists)
@@ -293,25 +293,48 @@ void PropertiesPanel::DrawComponents(Entity e)
 			auto EntityClass = ScriptEngine::GetEntityClasses().find(SC.ClassName)->second;
 			for (const auto& [name, field] : EntityClass->GetFields())
 			{
+				auto& instance = ScriptEngine::GetScriptFieldInstance(name, uuid);
+
+				if (field.type == ScriptFieldType::Int)
+				{
+					int data = 0;
+					if (IsPlayMode)	data = SI->GetFieldValue<int>(name);
+					else data = instance.GetValue<int>();
+					
+					if (ImGui::DragInt(name.c_str(), &data))
+					{
+						instance.SetFieldValue(data);
+						if (IsPlayMode) SI->SetFieldValue(name, data);
+						else ScriptEngine::SetScriptFieldInstance(name, uuid, instance);
+					}
+				}
+
 				if (field.type == ScriptFieldType::Float)
 				{
-					auto& instance = ScriptEngine::GetScriptFieldInstance(name, uuid);
 					float data = 0;
-					if (IsPlayMode)	
-						data = SI->GetFieldValue<float>(name);
+					if (IsPlayMode)	data = SI->GetFieldValue<float>(name);
 					else data = instance.GetValue<float>();
 					
 					if (ImGui::DragFloat(name.c_str(), &data))
 					{
-						if (IsPlayMode)
-						{
-							if (SI) SI->SetFieldValue(name, data);
-						}
-						else
-						{
-							instance.SetFieldValue(data);
-							ScriptEngine::SetScriptFieldInstance(name, uuid, instance);
-						}
+						instance.SetFieldValue(data);
+						if (IsPlayMode) SI->SetFieldValue(name, data);
+						else ScriptEngine::SetScriptFieldInstance(name, uuid, instance);
+					}
+				}
+
+				if (field.type == ScriptFieldType::Bool)
+				{
+					bool data;
+
+					if (IsPlayMode) data = SI->GetFieldValue<bool>(name); // C# runtime Data
+					else data = instance.GetValue<bool>();	  // Editor Local Data
+ 
+					if (ImGui::Checkbox(name.c_str(), &data))
+					{
+						instance.SetFieldValue(data);
+						if (IsPlayMode) SI->SetFieldValue(name, data);					 // C# runtime Data
+						else ScriptEngine::SetScriptFieldInstance(name, uuid, instance); // Editor Local Data
 					}
 				}
 

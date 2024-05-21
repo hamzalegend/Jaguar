@@ -25,7 +25,7 @@ static std::unordered_map<std::string, ScriptFieldType> s_ScriptFieldTypeMap =
     {"System.Single", ScriptFieldType::Float},
     {"System.Double", ScriptFieldType::Double},
     {"System.Boolean", ScriptFieldType::Bool},
-    {"System.Int64", ScriptFieldType::Int},
+    {"System.Int32", ScriptFieldType::Int},
     {"System.UInt32", ScriptFieldType::Uint},
     {"System.Int16", ScriptFieldType::Short},
     {"System.Byte.", ScriptFieldType::Byte},
@@ -319,7 +319,7 @@ void ScriptEngine::OnEditorStart(Scene* scene)
 
 
 
-        
+
         if (!ScriptEngine::EntityClassExists(SC.ClassName))  return;
 
         auto& scriptClass = ScriptEngine::GetEntityClass(SC.ClassName);
