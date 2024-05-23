@@ -10,9 +10,8 @@
 #include "Scripting/ScriptEngine.h"
 #include "Core/UUID.h"
 
-
-PropertiesPanel::PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView, bool* ipm)
-	:m_sceneHierarchyPanel(SHP), m_viewport(viewport), m_gameView(gameView), m_inplayMode(ipm)
+PropertiesPanel::PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView, bool* inPlayMode, Ref<Scene>& scene)
+	:m_sceneHierarchyPanel(SHP), m_viewport(viewport), m_gameView(gameView), m_inplayMode(inPlayMode), m_Scene(scene)
 {
 }
 
@@ -90,6 +89,14 @@ void PropertiesPanel::DrawComponents(Entity e)
 			ImGui::DragFloat3("Rotation", glm::value_ptr(rot), 0.1);
 			ImGui::DragFloat3("Scale", glm::value_ptr(transform.Scale), 0.1);
 			transform.Rotation = glm::radians(rot);
+			int v = m_Scene->GetEntityByUUID(transform.Parent);
+			if (ImGui::DragInt("Parent ID", &v))
+			{
+				Entity a = { (entt::entity)v, m_Scene.get()};
+				e.SetParent(a.GetComponent<UUIDComponent>().uuid);
+			}
+			ImGui::Button("Parent");
+			
 
 			ImGui::TreePop();
 		}

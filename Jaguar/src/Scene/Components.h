@@ -33,6 +33,9 @@ struct TransformComponent
 	}
 
 
+	Jaguar::UUID Parent;
+	std::map<Jaguar::UUID, bool> Children;
+
 	TransformComponent() = default;
 	TransformComponent(const TransformComponent&) = default;
 	TransformComponent(const glm::vec3& translation)

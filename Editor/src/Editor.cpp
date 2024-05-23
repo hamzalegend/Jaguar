@@ -81,9 +81,10 @@ void EditorLayer::OnAttach()
 	m_SceneHierarchyPanel = MakeRef<SceneHierarchyPanel>(m_scene);
 	m_ViewportPanel = MakeRef<ViewportPanel>(this);
 	m_GameViewPanel = MakeRef<GameView>(m_GameViewFrameBuffer, m_scene);
-	m_PropertiesPanel = MakeRef<PropertiesPanel>(m_SceneHierarchyPanel, m_ViewportPanel, m_GameViewPanel, &m_inPlayMode);
+	m_PropertiesPanel = MakeRef<PropertiesPanel>(m_SceneHierarchyPanel, m_ViewportPanel, m_GameViewPanel, &m_inPlayMode, m_scene);
 
 	ImguiLayer::init(Application::Get().GetWindow()->GetNative());
+	OpenScene("Assets/Scenes/2D.Hscn");
 };
 
 bool lstfrmsim;

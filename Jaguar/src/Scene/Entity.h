@@ -19,6 +19,14 @@ public:
 
 	~Entity() {};
 
+	void SetParent(Jaguar::UUID uuid)
+	{
+		m_Scene->GetEntityByUUID(GetComponent<TransformComponent>().Parent).GetComponent<TransformComponent>().Children.erase(GetComponent<UUIDComponent>().uuid);
+		GetComponent<TransformComponent>().Parent = uuid;
+		m_Scene->GetEntityByUUID(uuid).GetComponent<TransformComponent>().Children.emplace(GetComponent<UUIDComponent>().uuid, false);
+			
+	}
+
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)
 	{

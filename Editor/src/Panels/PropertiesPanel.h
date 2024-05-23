@@ -6,7 +6,7 @@
 class PropertiesPanel : public Panel
 {
 public:
-	PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView, bool* inPlayMode);
+	PropertiesPanel(Ref<SceneHierarchyPanel>& SHP, Ref<ViewportPanel> viewport, Ref<GameView>& gameView, bool* inPlayMode, Ref<Scene>& scene);
 
 	~PropertiesPanel();
 
@@ -20,6 +20,7 @@ private:
 	Ref<SceneHierarchyPanel>& m_sceneHierarchyPanel;
 	Ref<ViewportPanel> m_viewport;
 	Ref<GameView>& m_gameView;
+	Ref<Scene>& m_Scene;
 	bool* m_inplayMode;
 
 };

@@ -19,10 +19,10 @@ void SceneHierarchyPanel::Draw()
 	auto group = m_scene->m_Registry.group<TagComponent>(entt::get<TransformComponent>);
 	for (auto& entityID : group)
 	{
-		Entity e = { entityID, m_scene.get() };
+	}
+		Entity e = m_scene->GetEntityByUUID(0);
 		if (e != -1)
 			DrawEntityNode(e);
-	}
 
 	if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(0))
 		m_selectedEntity = { (entt::entity)-1, m_scene.get() };
@@ -46,9 +46,24 @@ void SceneHierarchyPanel::DrawEntityNode(Entity e)
 
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)e, flags, name.c_str());
 	if (ImGui::BeginDragDropSource())
-	{;
-		ImGui::SetDragDropPayload("UUID", (const void*)&e.GetComponent<UUIDComponent>().uuid, sizeof(Jaguar::UUID));
+	{
+		ImGui::SetDragDropPayload("ID", (const void*)&e, sizeof(int));
 		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ID");
+		if (payload)
+		{
+			int* v = (int*)payload->Data;
+			Entity ent((entt::entity)*v, m_scene.get());
+			ent.SetParent(e.GetComponent<UUIDComponent>().uuid);
+		}
+		else
+		{
+		}
+		ImGui::EndDragDropTarget();
 	}
 
 	if (ImGui::IsItemClicked())
@@ -64,9 +79,11 @@ void SceneHierarchyPanel::DrawEntityNode(Entity e)
 		ImGui::EndPopup();
 	}
 
-
 	if (opened)
 	{
+		for (auto [uuid, _] : e.GetComponent<TransformComponent>().Children)
+			DrawEntityNode(m_scene->GetEntityByUUID(uuid));
+
 		ImGui::TreePop();
 	}
 	if (entityDeleted)
