@@ -1,4 +1,6 @@
 #include "SceneHierarchyPanel.h"
+#include "glm/gtx/matrix_decompose.hpp"
+#include "glm/gtx/euler_angles.hpp"
 
 SceneHierarchyPanel::SceneHierarchyPanel(Ref<Scene>& scene)
 	:m_scene(scene)
@@ -58,6 +60,19 @@ void SceneHierarchyPanel::DrawEntityNode(Entity e)
 		{
 			int* v = (int*)payload->Data;
 			Entity ent((entt::entity)*v, m_scene.get());
+			auto& PTC = e.GetComponent<TransformComponent>();
+			auto& CTC = ent.GetComponent<TransformComponent>();
+
+			glm::vec3 position, scale;
+			glm::quat rotation;
+			glm::vec3 skew;
+			glm::vec4 perspective;
+			glm::decompose(glm::inverse(PTC.GetGlobalTransform()) * CTC.GetGlobalTransform(), scale, rotation, position, skew, perspective);
+
+			CTC.Position = position;
+			CTC.Rotation = glm::eulerAngles(rotation);
+			CTC.Scale = scale;
+
 			ent.SetParent(e.GetComponent<UUIDComponent>().uuid);
 		}
 		else

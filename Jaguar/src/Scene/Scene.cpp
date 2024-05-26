@@ -113,7 +113,7 @@ Entity Scene::CreateEntity(const std::string& name)
 	Entity e = { m_Registry.create(), this };
 	e.AddComponent<TagComponent>(name);
 	enttMap[e.AddComponent<UUIDComponent>().uuid] = e;
-	e.AddComponent<TransformComponent>();
+	e.AddComponent<TransformComponent>(this);
 	return e;
 }
 
@@ -123,7 +123,7 @@ Entity Scene::CreateEntityWithUUID(uint64_t uuid, const std::string& name)
 	e.AddComponent<TagComponent>(name);
 	enttMap[uuid] = e;
 	e.AddComponent<UUIDComponent>().uuid = Jaguar::UUID(uuid);
-	e.AddComponent<TransformComponent>();
+	e.AddComponent<TransformComponent>(this);
 	return e;
 // 	return Entity();
 }
@@ -131,6 +131,7 @@ Entity Scene::CreateEntityWithUUID(uint64_t uuid, const std::string& name)
 
 void Scene::DestroyEntity(Entity e)
 {
+	// GetEntityByUUID(e.GetComponent<TransformComponent>().Parent).GetComponent<TransformComponent>().Children.erase(e.GetComponent<UUIDComponent>().uuid);//fix TODO::
 	enttMap.erase(e.GetComponent<UUIDComponent>().uuid);
 	m_Registry.destroy(e);
 }
@@ -248,7 +249,7 @@ void Scene::OnUpdate(float deltaTime, bool RunPhysics)
 		{
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO:: remove
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // TODO:: remove
-			Renderer::RednerScene(this, &mainCam.GetComponent<CameraComponent>().camera, inverse(mainCam.GetComponent<TransformComponent>().GetTransform()));
+			Renderer::RednerScene(this, &mainCam.GetComponent<CameraComponent>().camera, inverse(mainCam.GetComponent<TransformComponent>().GetGlobalTransform()));
 		}
 	}
 

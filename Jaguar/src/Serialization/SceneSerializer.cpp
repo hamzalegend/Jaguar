@@ -289,6 +289,7 @@ void SceneSerializer::DeSerialize(const std::string& path)
 	std::string sceneName = data["Scene"].as<std::string>();
 
 	auto root = m_scene->CreateEntityWithUUID(0, "Root");
+	root.GetComponent<TransformComponent>().Parent = 0;
 	auto entities = data["Entites"];
 
 	if (entities)

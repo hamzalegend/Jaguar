@@ -237,7 +237,7 @@ void Renderer::RednerScene(Scene* scene, Camera* cam, glm::mat4 viewMat)
 			MeshRendererComponent& MRC = group.get<MeshRendererComponent>(entity);
 			MRC.mesh.ID = (int)entity;
 			if (MRC.mesh.vertices->size() > 0)
-				Renderer::SubmitMesh(MRC, transform.GetTransform());
+				Renderer::SubmitMesh(MRC, transform.GetGlobalTransform());
 		}
 	}
 	{
@@ -247,7 +247,7 @@ void Renderer::RednerScene(Scene* scene, Camera* cam, glm::mat4 viewMat)
 			const TransformComponent& transform = group.get<TransformComponent>(entity);
 			SpriteRendererComponent& spriteRenderer = group.get<SpriteRendererComponent>(entity);
 			spriteRenderer.sprite.ID = (int)entity;
-			Renderer::SubmitSprite(transform.GetTransform(), spriteRenderer.sprite);
+			Renderer::SubmitSprite(transform.GetGlobalTransform(), spriteRenderer.sprite);
 		}
 	}
 	{

@@ -12,26 +12,31 @@
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-
+#include <map>
 #include <string>
 
 class ScriptableEntity;
+class Scene;
 
-struct TransformComponent
+struct JAGUAR_API TransformComponent
 {
 	glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 
-	glm::mat4 GetTransform() const
-	{
-		glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
+	glm::mat4 GetTransform() const;
 
-		return glm::translate(glm::mat4(1.0f), Position)
-			* rotation
-			* glm::scale(glm::mat4(1.0f), Scale);
-	}
+	glm::mat4 GetGlobalTransform() const;
 
+	glm::vec3 GetGlobalPosition() const;
+	glm::vec3 GetGlobalRotation() const;
+	glm::vec3 GetGlobalScale() const;
+
+	void SetGlobalPosition(const glm::vec3& pos);
+	void SetGlobalRotation(const glm::vec3& rot);
+	void SetGlobalScale(const glm::vec3& scl);
+
+	void SetGlobalTransform(glm::mat4 mat) ;
 
 	Jaguar::UUID Parent;
 	std::map<Jaguar::UUID, bool> Children;
@@ -40,6 +45,11 @@ struct TransformComponent
 	TransformComponent(const TransformComponent&) = default;
 	TransformComponent(const glm::vec3& translation)
 		: Position(translation) {}
+	TransformComponent(Scene* scene)
+		: m_Scene(scene) {}
+
+private:
+	Scene* m_Scene;
 };
 
 struct TagComponent
@@ -208,7 +218,7 @@ struct ComponentGroup
 };
 
 using AllComponents = ComponentGroup<
-	TransformComponent, 
+	TransformComponent,
 	MeshRendererComponent,
 	SpriteRendererComponent,
 	CameraComponent,
@@ -217,4 +227,4 @@ using AllComponents = ComponentGroup<
 	RigidBody2DComponent,
 	BoxCollider2DComponent,
 	lightComponent
-	>;
+>;

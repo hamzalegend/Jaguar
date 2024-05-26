@@ -156,7 +156,7 @@ void ViewportPanel::Draw()
 		glm::mat4 view = m_editor->m_EditorCameraController->GetViewMatrix();
 
 		auto &tc = e.GetComponent<TransformComponent>();
-		glm::mat4 transform = tc.GetTransform();
+		glm::mat4 transform = tc.GetGlobalTransform();
 
 		ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(glm::scale(proj, glm::vec3(1, -1, 1))), EditorOperation, ImGuizmo::LOCAL, glm::value_ptr(transform));
 
@@ -164,11 +164,12 @@ void ViewportPanel::Draw()
 		{
 			glm::vec3 translation, rotation, scale;
 			ourDecomposeTransform(transform, translation, rotation, scale);
-
 			glm::vec3 deltaRotation = rotation - tc.Rotation;
-			tc.Position = translation;
-			tc.Rotation += deltaRotation;
-			tc.Scale = scale;
+			tc.SetGlobalPosition(translation);
+			tc.Rotation = rotation;
+			tc.SetGlobalScale(scale);
+			// tc.Rotation = deltaRotation;
+			// tc.Scale += scale - tc.GetGlobalScale();
 		}
 	}
 
