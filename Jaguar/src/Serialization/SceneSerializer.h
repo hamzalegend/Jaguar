@@ -7,6 +7,7 @@
 #include "Core/DEFINES.h"
 #include "glm/glm.hpp"
 #include "Asset/AssetManager.h"
+#include <filesystem>
 
 class JAGUAR_API SceneSerializer
 {
@@ -15,7 +16,7 @@ public:
 	~SceneSerializer();
 
 	void Serialize(const std::string& path);
-	void DeSerialize(const std::string& path);
+	void DeSerialize(const std::string& path, std::filesystem::path projectPath);
 
 private:
 	Ref<Scene>& m_scene;

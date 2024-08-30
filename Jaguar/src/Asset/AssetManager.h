@@ -21,6 +21,8 @@ public:
 	AssetManager();
 	~AssetManager();
 
+	static void Init(std::filesystem::path projectPath);
+
 	// int LoadTexture(std::string path);
 	// Ref<Texture> GetTexture(int ID);
 

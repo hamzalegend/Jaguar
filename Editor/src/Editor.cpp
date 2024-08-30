@@ -21,7 +21,8 @@
 #include <string>
 #include <iostream>
 
-EditorLayer::EditorLayer()
+EditorLayer::EditorLayer(std::filesystem::path ProjectPath)
+:m_ProjectPath(ProjectPath)
 {
 }
 
@@ -46,7 +47,8 @@ void EditorLayer::OnSceneStop()
 
 void EditorLayer::OpenScene(std::filesystem::path path)
 {
-	m_Serializer->DeSerialize(path.string());
+	std::cout << path << "\n";
+	m_Serializer->DeSerialize(( path).string(), m_ProjectPath);
 	ScriptEngine::OnEditorStart(m_scene.get());
 }
 
@@ -77,12 +79,13 @@ void EditorLayer::OnAttach()
 	}
 
 	m_EditorCameraController = MakeRef<EditorCameraController>();
-	m_ContentBrowserPanel = MakeRef<ContentBrowserPanel>("Assets");
+	m_ContentBrowserPanel = MakeRef<ContentBrowserPanel>((m_ProjectPath / "Assets").string());
 	m_SceneHierarchyPanel = MakeRef<SceneHierarchyPanel>(m_scene);
 	m_ViewportPanel = MakeRef<ViewportPanel>(this);
 	m_GameViewPanel = MakeRef<GameView>(m_GameViewFrameBuffer, m_scene);
 	m_PropertiesPanel = MakeRef<PropertiesPanel>(m_SceneHierarchyPanel, m_ViewportPanel, m_GameViewPanel, &m_inPlayMode, m_scene);
 
+	AssetManager::Init(m_ProjectPath);
 	ImguiLayer::init(Application::Get().GetWindow()->GetNative());
 	OpenScene("Assets/Scenes/2D.Hscn");
 };

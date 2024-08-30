@@ -18,7 +18,7 @@
 class EditorLayer : public Layer
 {
 public:
-	EditorLayer();
+	EditorLayer(std::filesystem::path ProjectPath);
 	~EditorLayer();
 
 	virtual void OnAttach() override;
@@ -60,4 +60,6 @@ private:
 	bool m_inPlayMode = false;
 
 	friend class ViewportPanel;
+
+	std::filesystem::path m_ProjectPath;
 };

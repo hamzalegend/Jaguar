@@ -1,4 +1,0 @@
-Material: Assets/Materials\trees.mat
-VertexShaderPath: Assets/Shaders\basic.vs
-FragmentShaderPath: Assets/Shaders\basic.fs
-AlbedoPath: Assets/Models\trees\textures\bark_baseColor.png

@@ -6,8 +6,16 @@
 
 #include <fstream>
 
+static std::filesystem::path s_ProjectPath;
+
 AssetManager::AssetManager()
 {
+
+}
+
+void AssetManager::Init(std::filesystem::path projectPath)
+{
+	s_ProjectPath = projectPath;
 }
 
 AssetManager::~AssetManager()
@@ -20,7 +28,7 @@ Ref<Material> AssetManager::LoadMaterial(const char* path)
 	YAML::Node data;
 	try
 	{
-		data = YAML::LoadFile(path);
+		data = YAML::LoadFile((s_ProjectPath/ path).string().c_str());
 	}
 	catch (YAML::ParserException e)
 	{
@@ -37,8 +45,8 @@ Ref<Material> AssetManager::LoadMaterial(const char* path)
 	m_mat->FragmentShaderPath = data["FragmentShaderPath"].as<std::string>();
 	m_mat->AlbedoPath= data["AlbedoPath"].as<std::string>();
 
-	m_mat->Shader = MakeRef<Shader>(m_mat->VertexShaderPath.c_str(), m_mat->FragmentShaderPath.c_str());
-	m_mat->Albedo = MakeRef<Texture>(m_mat->AlbedoPath.c_str());
+	m_mat->Shader = MakeRef<Shader>((s_ProjectPath / m_mat->VertexShaderPath).string().c_str(), (s_ProjectPath / m_mat->FragmentShaderPath).string().c_str());
+	m_mat->Albedo = MakeRef<Texture>((s_ProjectPath / m_mat->AlbedoPath).string().c_str());
 
 	m_mat->Path = path;
 

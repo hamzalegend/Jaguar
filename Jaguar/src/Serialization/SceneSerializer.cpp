@@ -268,14 +268,14 @@ void SceneSerializer::Serialize(const std::string& path)
 	std::cout << "serializing: " << path << "\n";
 }
 
-void SceneSerializer::DeSerialize(const std::string& path)
+void SceneSerializer::DeSerialize(const std::string& path, std::filesystem::path projectPath)
 {
 	m_scene = MakeRef<Scene>();
 
 	YAML::Node data;
 	try
 	{
-		data = YAML::LoadFile(path);
+		data = YAML::LoadFile((projectPath / path).string());
 	}
 	catch (YAML::ParserException e)
 	{
@@ -332,7 +332,7 @@ void SceneSerializer::DeSerialize(const std::string& path)
 				SpriteRendererComponent& SRC = e.AddComponent<SpriteRendererComponent>();
 				SRC.sprite.color = sprite["Color"].as<glm::vec4>();
 				SRC.sprite.texturePath = sprite["texturePath"].as<std::string>();
-				SRC.sprite.texture = MakeRef<Texture>(SRC.sprite.texturePath.c_str());
+				SRC.sprite.texture = MakeRef<Texture>((projectPath / SRC.sprite.texturePath).string().c_str());
 
 			}
 			// MeshRenderer
@@ -345,7 +345,7 @@ void SceneSerializer::DeSerialize(const std::string& path)
 				MRC.mesh.meshPath = mesh["meshPath"].as<std::string>();
 				MRC.mesh.Material = AssetManager::LoadMaterial(mesh["MaterialPath"].as<std::string>().c_str());
 				// MRC.mesh.texture = MakeRef<Texture>(MRC.mesh.texturePath.c_str());
-				mm.loadModel(MRC.mesh.meshPath);
+				mm.loadModel((projectPath / MRC.mesh.meshPath).string());
 				*MRC.mesh.vertices = mm.getVertexData();
 				*MRC.mesh.indices = mm.getIndexData();
 				mm.clear();

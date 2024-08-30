@@ -9,6 +9,7 @@
 
 Texture::Texture(const char* path)
 {
+	std::cout << path << std::endl;
 
 	glGenTextures(1, &m_ID);
 	glBindTexture(GL_TEXTURE_2D, m_ID);
