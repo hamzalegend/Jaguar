@@ -20,10 +20,12 @@
 #include <windows.h>
 #include <string>
 #include <iostream>
+char buff[64];
 
 EditorLayer::EditorLayer(std::filesystem::path ProjectPath)
 :m_ProjectPath(ProjectPath)
 {
+	*buff = 0;
 }
 
 EditorLayer::~EditorLayer()
@@ -54,7 +56,7 @@ void EditorLayer::OpenScene(std::filesystem::path path)
 
 void EditorLayer::SaveScene(std::filesystem::path path)
 {
-	m_Serializer->Serialize(std::filesystem::current_path().string() + std::string("/Assets/") + path.string());
+	m_Serializer->Serialize( path.string());
 }
 
 
@@ -87,7 +89,7 @@ void EditorLayer::OnAttach()
 
 	AssetManager::Init(m_ProjectPath);
 	ImguiLayer::init(Application::Get().GetWindow()->GetNative());
-	OpenScene("Assets/Scenes/2D.Hscn");
+	OpenScene("Assets/Scenes/main.jscn");
 };
 
 bool lstfrmsim;
@@ -162,6 +164,11 @@ void EditorLayer::OnUpdate(float deltaTime)
 }
 Ref<Material> mat;
 std::string path;
+
+bool ShowSaveWindow = false;
+
+
+
 void EditorLayer::OnUIUpdate()
 {
 	ImguiLayer::Begin();
@@ -244,7 +251,26 @@ void EditorLayer::OnUIUpdate()
 			}
 
 		}
+		if (ShowSaveWindow)
+		{
+			ImGui::Begin("Save Scene");
+			
+			ImGui::InputText("Name: ", buff, sizeof(buff));
+			if (ImGui::Button("Save"))
+			{
+				std::cout << std::string(buff).c_str();
+				auto p = (std::filesystem::path(m_ProjectPath) / "Assets/Scenes/") / std::filesystem::path(std::string(buff)+ ".jscn");
+				SaveScene(p);
+				ShowSaveWindow = false;
+			}
 
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel"))
+			{
+				ShowSaveWindow = false;
+			}
+			ImGui::End();
+		}
 
 		ImGui::End();
 	}
@@ -286,7 +312,6 @@ void EditorLayer::OnDetach()
 	ImguiLayer::Destroy();
 }
 
-
 void EditorLayer::showDefaultUI()
 {
 
@@ -316,7 +341,9 @@ void EditorLayer::showDefaultUI()
 				}
 				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+			if (ImGui::MenuItem("Save", "Ctrl+S")) {
+				ShowSaveWindow = true;
+			}
 			if (ImGui::MenuItem("Save As..")) {}
 
 			ImGui::Separator();
